@@ -16,7 +16,7 @@ def generate_question(operation):
         num2 = random.randint(1, 10)
         correct_answer = num1 * num2
     else:  # For division
-        num2 = random.randint(2, 10)  # Ensure num2 is not 1, and limit to 20 for num2
+        num2 = random.randint(2, 10)  # Ensure num2 is not 1, and limit to 10 for num2
         max_quotient = 30 // num2  # Increase the range for num1 to avoid consistent results of 1
         num1 = random.randint(2, max_quotient) * num2  # num1 is a multiple of num2
         correct_answer = num1 // num2  # Calculate correct answer using integer division
@@ -45,7 +45,7 @@ def math_quiz(num_questions, operations):
                 user_answer = int(user_answer)  # Convert user input to integer
                 break
             except ValueError:
-                print("Invalid input! Please enter a valid number.")
+                print("Invalid input! Please enter a valid integer.")
 
         if check_answer(num1, operator, num2, user_answer, correct_answer):
             print("Correct!\n")
@@ -88,7 +88,7 @@ def yes_no(question):
         if response == "no" or response == "n":
             return False
         else:
-            print("Please enter yes or no")
+            print("Please enter either yes or no")
 
 
 def instructions():
@@ -96,22 +96,23 @@ def instructions():
 
     *** Instructions ***
 
-Hey there! Welcome to the Math Quiz. Get ready to have a blast!
+Hey there! Welcome to the Math Quiz.
 
-Choose Your Challenge:
-Decide how many questions you want to tackle in each round. Enter your desired amount of questions.
+To begin, decide how many rounds you want to play or test yourself in infinite mode. If you choose
+infinite mode, you'll play until you decide to stop.Enter your desired amount of rounds and 
+questions per round.
 
 Solve the Problems:
-Get cracking on those math problems! We're talking addition, subtraction, multiplication, and division!
-
-No pressure, just type in your answers and hit Enter. 
+You can choose one of the four basic operations: Addition, Subtraction, Multiplication and Division
+Yuo will be able to change your operation every round so you don't get bored of one operation. 
 
 If you answer incorrectly, we'll gently steer you in the right direction with the correct answer.
+You can exit the quiz during any round. Just enter "xxx" as your answer and the quiz will end.
 
 Check Your Progress:
 Curious to see how you did? Look at your progress at the end of the game with the Quiz History option.
 
-Ready to dive into the fun? Let's get started!
+Good luck!
 
     ''')
 
@@ -119,7 +120,7 @@ Ready to dive into the fun? Let's get started!
 print()
 print('''
  ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
-    ✦  🔢🔢🔢  Welcome to the Math Quiz! 🔢🔢🔢   ✦
+    ✦   🔢🔢🔢  Welcome to the Math Quiz! 🔢🔢🔢    ✦
  ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
   ''')
 print()
@@ -129,16 +130,17 @@ want_instructions = yes_no("Do you want to read the instructions? ")
 if want_instructions:
     instructions()
 
+
 mode = "regular"
 rounds_played = 0
+
+num_rounds = int_check("How many rounds would you like to play? Push <enter> for infinite mode: ")
 
 num_questions_per_round = int_check("How many questions would you like per round? ")
 
 if num_questions_per_round == "infinite":
     mode = "infinite"
-    num_questions_per_round = 5  # Default value for infinite mode
-
-num_rounds = int_check("How many rounds would you like to play? ")
+    num_questions_per_round = 1  # Default value for infinite mode
 
 if num_rounds == "infinite":
     mode = "infinite"
@@ -146,7 +148,7 @@ if num_rounds == "infinite":
 
 while rounds_played < num_rounds:
     if mode == "infinite":
-        rounds_heading = f"\n ️♾️️️️️♾ Round {rounds_played + 1} of (Infinite mode) ♾♾️"
+        rounds_heading = f"\n ️♾️️️️🔄 Round {rounds_played + 1} of (Infinite mode) 🔄♾️"
     else:
         rounds_heading = f"\n🕒🕒🕒 Round {rounds_played + 1} 🕒🕒🕒"
 
@@ -162,7 +164,7 @@ while rounds_played < num_rounds:
             if operation in ['+', '-', '*', '/']:
                 break
             else:
-                print("Invalid operation! Please choose either '+', '-', '*', or '/'.")
+                print("Invalid operation! Please choose either +, -, *, or /.")
     else:
         while True:
             operation = input("You're in infinite mode. Which operation do you want? (+, -, *, /): ")
