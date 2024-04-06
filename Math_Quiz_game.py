@@ -1,6 +1,5 @@
 import random
 
-
 # Function to generate a random math question based on the chosen operation and range of numbers
 def generate_question(operation, num_range):
     if operation == '+':
@@ -22,7 +21,6 @@ def generate_question(operation, num_range):
         correct_answer = num1 // num2  # Calculate correct answer using integer division
     return num1, operation, num2, correct_answer
 
-
 # Function to check if the user's answer is correct
 def check_answer(num1, operator, num2, user_answer, correct_answer):
     if operator in ['+', '-', '*', '/']:
@@ -30,17 +28,23 @@ def check_answer(num1, operator, num2, user_answer, correct_answer):
     else:
         return False  # Handle unknown operation
 
-
 # Function to get user's preferred range of numbers
 def get_number_range():
     while True:
-        min_num = int(input("Enter the minimum number for the range: "))
-        max_num = int(input("Enter the maximum number for the range: "))
-        if min_num >= max_num:
-            print("Minimum number should be less than maximum number. Please try again.")
-        else:
-            return min_num, max_num
-
+        try:
+            min_num = int(input("Enter the minimum number for the range: "))
+            while True:
+                max_num = int(input("Enter the maximum number for the range (larger than 10): "))
+                if max_num > 10:
+                    break
+                else:
+                    print("Maximum number should be larger than 10. Please try again.")
+            if min_num >= max_num:
+                print("Minimum number should be less than maximum number. Please try again.")
+            else:
+                return min_num, max_num
+        except ValueError:
+            print("Invalid input! Please enter valid integers.")
 
 # Main routine
 def math_quiz(num_questions, operations, num_range):
@@ -65,7 +69,6 @@ def math_quiz(num_questions, operations, num_range):
             print(f"Wrong! The correct answer is {correct_answer}\n")
     print(f"You scored {score} out of {num_questions}.\n")
 
-
 # Main routine starts here
 def yes_no(question):
     while True:
@@ -76,7 +79,6 @@ def yes_no(question):
             return False
         else:
             print("Please enter either yes or no")
-
 
 def instructions():
     print('''
@@ -93,7 +95,6 @@ Check Your Progress:
 Curious to see how you did? Look at your progress at the end of the game with the Quiz History option.
 Good luck!
     ''')
-
 
 print()
 print('''
