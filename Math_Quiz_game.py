@@ -56,30 +56,6 @@ def math_quiz(num_questions, operations):
 
 
 # Main routine starts here
-# Ask for the number of questions per round or infinite mode
-def int_check(question):
-    while True:
-        error = "Please enter an integer that is 1 or more."
-
-        to_check = input(question)
-
-        # check for infinite mode
-        if to_check == "":
-            return "infinite"
-
-        try:
-            response = int(to_check)
-
-            # checks that the number is more than / equal to 1
-            if response < 1:
-                print(error)
-            else:
-                return response
-
-        except ValueError:
-            print(error)
-
-
 def yes_no(question):
     while True:
         response = input(question).lower()
@@ -99,12 +75,11 @@ def instructions():
 Hey there! Welcome to the Math Quiz.
 
 To begin, decide how many rounds you want to play or test yourself in infinite mode. If you choose
-infinite mode, you'll play until you decide to stop.Enter your desired amount of rounds and 
-questions per round.
+infinite mode, you'll play until you decide to stop. Just press Enter for infinite mode.
 
 Solve the Problems:
-You can choose one of the four basic operations: Addition, Subtraction, Multiplication and Division
-Yuo will be able to change your operation every round so you don't get bored of one operation. 
+You can choose one of the four basic operations: Addition, Subtraction, Multiplication and Division.
+You will be able to change your operation every round so you don't get bored of one operation.
 
 If you answer incorrectly, we'll gently steer you in the right direction with the correct answer.
 You can exit the quiz during any round. Just enter "xxx" as your answer and the quiz will end.
@@ -130,21 +105,30 @@ want_instructions = yes_no("Do you want to read the instructions? ")
 if want_instructions:
     instructions()
 
-
 mode = "regular"
 rounds_played = 0
 
-num_rounds = int_check("How many rounds would you like to play? Push <enter> for infinite mode: ")
+# Ask for the number of rounds per round or push enter for infinite mode
+while True:
+    num_rounds_input = input("How many rounds would you like to play? Press Enter for infinite mode: ")
+    if num_rounds_input == "":
+        num_rounds = float('inf')
+        mode = "infinite"
+        break
+    elif num_rounds_input.isdigit():
+        num_rounds = int(num_rounds_input)
+        mode = "regular"
+        break
+    else:
+        print("Invalid input! Please press Enter for infinite mode or enter an integer for normal rounds.")
 
-num_questions_per_round = int_check("How many questions would you like per round? ")
-
-if num_questions_per_round == "infinite":
-    mode = "infinite"
-    num_questions_per_round = 1  # Default value for infinite mode
-
-if num_rounds == "infinite":
-    mode = "infinite"
-    num_rounds = 5  # Default value for infinite mode
+while True:
+    num_questions_per_round_input = input("How many questions would you like per round? ")
+    if num_questions_per_round_input.isdigit():
+        num_questions_per_round = int(num_questions_per_round_input)
+        break
+    else:
+        print("Invalid input! Please enter an integer for the number of questions per round.")
 
 while rounds_played < num_rounds:
     if mode == "infinite":
@@ -157,21 +141,13 @@ while rounds_played < num_rounds:
 
     rounds_played += 1
 
-    # Asking for operation for each round if not in infinite mode
-    if mode != "infinite":
-        while True:
-            operation = input("Which operation do you want? (+, -, *, /): ")
-            if operation in ['+', '-', '*', '/']:
-                break
-            else:
-                print("Invalid operation! Please choose either +, -, *, or /.")
-    else:
-        while True:
-            operation = input("You're in infinite mode. Which operation do you want? (+, -, *, /): ")
-            if operation in ['+', '-', '*', '/']:
-                break
-            else:
-                print("Invalid operation! Please choose either '+', '-', '*', or '/'.")
+    # Asking for operation for each round
+    while True:
+        operation = input("Which operation do you want? (+, -, *, /): ")
+        if operation in ['+', '-', '*', '/']:
+            break
+        else:
+            print("Invalid operation! Please choose either +, -, *, or /.")
 
     math_quiz(num_questions_per_round, operation)
 
