@@ -1,5 +1,6 @@
 import random
 
+
 # Function to generate a random math question based on the chosen operation and range of numbers
 def generate_question(operation, num_range):
     if operation == '+':
@@ -21,6 +22,7 @@ def generate_question(operation, num_range):
         correct_answer = num1 // num2  # Calculate correct answer using integer division
     return num1, operation, num2, correct_answer
 
+
 # Function to check if the user's answer is correct
 def check_answer(num1, operator, num2, user_answer, correct_answer):
     if operator in ['+', '-', '*', '/']:
@@ -28,23 +30,25 @@ def check_answer(num1, operator, num2, user_answer, correct_answer):
     else:
         return False  # Handle unknown operation
 
+
 # Function to get user's preferred range of numbers
 def get_number_range():
     while True:
         try:
             min_num = int(input("Enter the minimum number for the range: "))
             while True:
-                max_num = int(input("Enter the maximum number for the range (larger than 10): "))
-                if max_num > 10:
+                max_num = int(input("Enter the maximum number for the range (larger than 20): "))
+                if max_num > 20:
                     break
                 else:
-                    print("Maximum number should be larger than 10. Please try again.")
+                    print("Maximum number should be larger than 20. Please try again.")
             if min_num >= max_num:
                 print("Minimum number should be less than maximum number. Please try again.")
             else:
                 return min_num, max_num
         except ValueError:
             print("Invalid input! Please enter valid integers.")
+
 
 # Main routine
 def math_quiz(num_questions, operations, num_range):
@@ -63,11 +67,12 @@ def math_quiz(num_questions, operations, num_range):
                 print("Invalid input! Please enter a valid integer.")
 
         if check_answer(num1, operator, num2, user_answer, correct_answer):
-            print("Correct!\n")
+            print("🟩Correct!\n")
             score += 1
         else:
-            print(f"Wrong! The correct answer is {correct_answer}\n")
+            print(f"🟥Wrong! The correct answer is {correct_answer}\n")
     print(f"You scored {score} out of {num_questions}.\n")
+
 
 # Main routine starts here
 def yes_no(question):
@@ -80,6 +85,7 @@ def yes_no(question):
         else:
             print("Please enter either yes or no")
 
+
 def instructions():
     print('''
     *** Instructions ***
@@ -90,11 +96,12 @@ Solve the Problems:
 You can choose one of the four basic operations: Addition, Subtraction, Multiplication and Division.
 You will be able to change your operation every round so you don't get bored of one operation.
 If you answer incorrectly, we'll gently steer you in the right direction with the correct answer.
-You can exit the quiz during any round. Just enter "xxx" as your answer and the quiz will end.
+You can exit the quiz during any round. Just enter "quit" as your answer and the quiz will end.
 Check Your Progress:
 Curious to see how you did? Look at your progress at the end of the game with the Quiz History option.
 Good luck!
     ''')
+
 
 print()
 print('''
