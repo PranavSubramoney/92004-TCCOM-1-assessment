@@ -1,6 +1,5 @@
 import random
 
-
 def choose_difficulty():
     print("Choose a difficulty level:")
     print("1.🟩 Easy (1-10)")
@@ -21,7 +20,6 @@ def choose_difficulty():
     else:
         print("Invalid choice. Please enter a number from 1 to 4.")
         return choose_difficulty()
-
 
 # Function to generate a random math question based on the chosen operation and range of numbers
 def generate_question(operation, num_range):
@@ -44,14 +42,12 @@ def generate_question(operation, num_range):
         correct_answer = num1 // num2  # Calculate correct answer using integer division
     return num1, operation, num2, correct_answer
 
-
 # Function to check if the user's answer is correct
 def check_answer(num1, operator, num2, user_answer, correct_answer):
     if operator in ['+', '-', '*', '/']:
         return user_answer == correct_answer
     else:
         return False  # Handle unknown operation
-
 
 # Main routine
 def math_quiz(num_questions, operations, num_range):
@@ -76,7 +72,6 @@ def math_quiz(num_questions, operations, num_range):
             print(f"🟥Wrong! The correct answer is {correct_answer}\n")
     print(f"You scored {score} out of {num_questions}.\n")
 
-
 # Main routine starts here
 def yes_no(question):
     while True:
@@ -87,7 +82,6 @@ def yes_no(question):
             return False
         else:
             print("Please enter either yes or no")
-
 
 def instructions():
     print('''
@@ -105,7 +99,6 @@ Curious to see how you did? Look at your progress at the end of the game with th
 Good luck!
     ''')
 
-
 print()
 print('''
  ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦ ✦
@@ -119,7 +112,6 @@ want_instructions = yes_no("Do you want to read the instructions? ")
 if want_instructions:
     instructions()
 
-num_range = (1, choose_difficulty())
 mode = "regular"
 rounds_played = 0
 
@@ -166,6 +158,8 @@ while rounds_played < num_rounds:
             break
         else:
             print("Invalid operation! Please choose either +, -, *, or /.")
+
+    num_range = (1, choose_difficulty())  # Ask for difficulty for each round
 
     math_quiz(num_questions_per_round, operation, num_range)
 
