@@ -22,7 +22,8 @@ def choose_difficulty():
         return choose_difficulty()
 
 # Function to generate a random math question based on the chosen operation and range of numbers
-def generate_question(operation, num_range):
+def generate_question(operations, num_range):
+    operation = random.choice(operations)
     if operation == '+':
         num1 = random.randint(num_range[0], num_range[1])
         num2 = random.randint(num_range[0], num_range[1])
@@ -51,7 +52,7 @@ def check_answer(num1, operator, num2, user_answer, correct_answer):
 
 # Main routine
 def math_quiz(num_questions, operations, num_range):
-    print(f"You've chosen {operations} operation with numbers in the range {num_range}.\n")
+    print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
     score = 0
     for i in range(num_questions):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
@@ -114,6 +115,7 @@ if want_instructions:
 
 mode = "regular"
 rounds_played = 0
+operations = ['+', '-', '*', '/']
 
 # Ask for the number of rounds
 while True:
@@ -138,8 +140,6 @@ while True:
     else:
         print("Invalid input! Please enter an integer for the number of questions per round.")
 
-print(f"You chose {mode} rounds with {num_questions_per_round} questions")
-
 while rounds_played < num_rounds:
     if mode == "infinite":
         rounds_heading = f"\n ️♾️️️️🔄 Round {rounds_played + 1} of (Infinite mode) 🔄♾️"
@@ -153,14 +153,18 @@ while rounds_played < num_rounds:
 
     # Asking for operation for each round
     while True:
-        operation = input("Which operation do you want? (+, -, *, /): ")
-        if operation in ['+', '-', '*', '/']:
+        operation_choice = input("Which operation do you want? (+, -, *, /, random): ").lower()
+        if operation_choice in ['+', '-', '*', '/', 'random']:
+            if operation_choice == 'random':
+                operations = ['+', '-', '*', '/']  # Include all operations
+            else:
+                operations = [operation_choice]
             break
         else:
-            print("Invalid operation! Please choose either +, -, *, or /.")
+            print("Invalid operation! Please choose either +, -, *, /, or random.")
 
     num_range = (1, choose_difficulty())  # Ask for difficulty for each round
 
-    math_quiz(num_questions_per_round, operation, num_range)
+    math_quiz(num_questions_per_round, operations, num_range)
 
 print("Thanks for playing!")
