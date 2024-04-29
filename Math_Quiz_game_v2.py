@@ -1,5 +1,7 @@
 import random
 
+# Global variable to store round history
+round_history = []
 
 def choose_difficulty():
     print("Choose a difficulty level:")
@@ -39,7 +41,7 @@ def generate_question(operations, num_range):
         num2 = random.randint(num_range[0], num_range[1])
         correct_answer = num1 * num2
     else:  # For division
-        num2 = random.randint(2, 10)  # Ensure num2 is not 1, and limit to 10 for num2
+        num2 = random.randint(1, 10)  # Ensure num2 is not 1, and limit to 10 for num2
         max_quotient = num_range[1] // num2  # Increase the range for num1 to avoid consistent results of 1
         num1 = random.randint(num_range[0], max_quotient) * num2  # num1 is a multiple of num2
         correct_answer = num1 // num2  # Calculate correct answer using integer division
@@ -55,27 +57,33 @@ def check_answer(num1, operator, num2, user_answer, correct_answer):
 
 
 # Main routine
-def math_quiz(num_questions, operations, num_range):
+def math_quiz(num_questions, operations, num_range, round_number):
     print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
     score = 0
+    round_history.clear()  # Clear round history for each new round
     for i in range(num_questions):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"Question {i + 1}: What is {num1} {operator} {num2}?")
 
         while True:
             user_answer = input("Your answer: ")
+            if user_answer.lower() == "quit":  # Check if user wants to quit
+                return False
             try:
                 user_answer = int(user_answer)  # Convert user input to integer
                 break
             except ValueError:
                 print("Invalid input! Please enter a valid integer.")
 
-        if check_answer(num1, operator, num2, user_answer, correct_answer):
+        is_correct = check_answer(num1, operator, num2, user_answer, correct_answer)
+        round_history.append((round_number, num1, operator, num2, user_answer, is_correct))  # Add round history
+        if is_correct:
             print("🟩Correct!\n")
             score += 1
         else:
             print(f"🟥Wrong! The correct answer is {correct_answer}\n")
     print(f"You scored {score} out of {num_questions}.\n")
+    return True
 
 
 # Main routine starts here
@@ -123,11 +131,12 @@ if want_instructions:
 mode = "regular"
 rounds_played = 0
 operations = ['+', '-', '*', '/']
+all_round_history = []  # Store history for all rounds
 
 # Ask for the number of rounds
 while True:
     print()
-    num_rounds_input = input("How many rounds would you like to play? Press Enter for infinite mode: ")
+    num_rounds_input = input("How many rounds would you like? Press Enter for infinite mode: ")
     if num_rounds_input == "":
         num_rounds = float('inf')
         mode = "infinite"
@@ -148,7 +157,7 @@ while True:
         if mode == "regular":
             print(f"You have chosen {num_rounds} rounds with {num_questions_per_round_input} questions.")
         if mode == "infinite":
-            print(f"You have chosen infinite mode with {num_questions_per_round_input} questions per round.")
+            print(f"You have chosen {num_questions_per_round_input} questions per round.")
         break
     else:
         print("Invalid input! Please enter an integer for the number of questions per round.")
@@ -178,6 +187,24 @@ while rounds_played < num_rounds:
 
     num_range = (1, choose_difficulty())  # Ask for difficulty for each round
 
-    math_quiz(num_questions_per_round, operations, num_range)
+    # Start the quiz for the current round
+    if not math_quiz(num_questions_per_round, operations, num_range, rounds_played):
+        break  # Break the loop if user quits
+
+    # Add round history to all rounds history
+    all_round_history.extend(round_history)
+
+# Print history for all rounds
+show_history = yes_no("Do you want to see the round history? ")
+if show_history:
+    print("\nRound History:")
+    current_round = 0
+    for round_data in all_round_history:
+        round_number, num1, operator, num2, user_answer, is_correct = round_data
+        if round_number != current_round:
+            print(f"\nRound {round_number}:")
+            current_round = round_number
+        result = "Correct" if is_correct else "Incorrect"
+        print(f"Question: {num1} {operator} {num2} = {user_answer} ({result})")
 
 print("Thanks for playing!")
