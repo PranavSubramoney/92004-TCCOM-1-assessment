@@ -189,22 +189,29 @@ while rounds_played < num_rounds:
 
     # Start the quiz for the current round
     if not math_quiz(num_questions_per_round, operations, num_range, rounds_played):
+        # If user quits mid-round, add the round history to all rounds history
+        all_round_history.extend(round_history)
         break  # Break the loop if user quits
 
     # Add round history to all rounds history
     all_round_history.extend(round_history)
 
 # Print history for all rounds
+print()
 show_history = yes_no("Do you want to see the round history? ")
 if show_history:
-    print("\nRound History:")
-    current_round = 0
-    for round_data in all_round_history:
-        round_number, num1, operator, num2, user_answer, is_correct = round_data
-        if round_number != current_round:
-            print(f"\nRound {round_number}:")
-            current_round = round_number
-        result = "Correct" if is_correct else "Incorrect"
-        print(f"Question: {num1} {operator} {num2} = {user_answer} ({result})")
+    if len(all_round_history) == 0:
+        print("There is no history to show.")
+    else:
+        print("\nRound History:")
+        current_round = 0
+        for round_data in all_round_history:
+            round_number, num1, operator, num2, user_answer, is_correct = round_data
+            if round_number != current_round:
+                print(f"\nRound {round_number}:")
+                current_round = round_number
+            result = "Correct" if is_correct else "Incorrect"
+            print(f"Question: {num1} {operator} {num2} = {user_answer} ({result})")
 
+print()
 print("Thanks for playing!")
