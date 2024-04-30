@@ -3,6 +3,7 @@ import random
 # Global variable to store round history
 round_history = []
 
+
 def choose_difficulty():
     print("Choose a difficulty level:")
     print("1.🟩 Easy (1-10)")
@@ -86,6 +87,30 @@ def math_quiz(num_questions, operations, num_range, round_number):
     return True
 
 
+# Integer checker function
+def int_check(question):
+    while True:
+        error = "Please enter an integer that is 1 or more."
+
+        to_check = input(question)
+
+        # check for infinite mode
+        if to_check == "":
+            return "infinite"
+
+        try:
+            response = int(to_check)
+
+            # checks that the number is more than / equal to 1
+            if response < 1:
+                print(error)
+            else:
+                return response
+
+        except ValueError:
+            print(error)
+
+
 # Main routine starts here
 def yes_no(question):
     while True:
@@ -136,31 +161,25 @@ all_round_history = []  # Store history for all rounds
 # Ask for the number of rounds
 while True:
     print()
-    num_rounds_input = input("How many rounds would you like? Press Enter for infinite mode: ")
-    if num_rounds_input == "":
+    num_rounds_input = int_check("How many rounds would you like? Press Enter for infinite mode: ")
+    if num_rounds_input == "infinite":
         num_rounds = float('inf')
         mode = "infinite"
         if mode == "infinite":
             print("You have chosen infinite mode!")
         break
-    elif num_rounds_input.isdigit():
-        num_rounds = int(num_rounds_input)
-        mode = "regular"
-        break
     else:
-        print("Invalid input! Please press Enter for infinite mode or enter an integer for normal rounds.")
+        num_rounds = num_rounds_input
+        mode = "regular"
+        if mode == "regular":
+            print(f"You have chosen {num_rounds_input} rounds.")
+        break
 
 while True:
-    num_questions_per_round_input = input("How many questions would you like per round? ")
-    if num_questions_per_round_input.isdigit():
-        num_questions_per_round = int(num_questions_per_round_input)
-        if mode == "regular":
-            print(f"You have chosen {num_rounds} rounds with {num_questions_per_round_input} questions.")
-        if mode == "infinite":
-            print(f"You have chosen {num_questions_per_round_input} questions per round.")
-        break
-    else:
-        print("Invalid input! Please enter an integer for the number of questions per round.")
+    num_questions_per_round_input = int_check("How many questions would you like per round? ")
+    num_questions_per_round = num_questions_per_round_input
+    print(f"You have chosen {num_questions_per_round_input} questions.")
+    break
 
 while rounds_played < num_rounds:
     if mode == "infinite":
@@ -198,7 +217,7 @@ while rounds_played < num_rounds:
 
 # Print history for all rounds
 print()
-show_history = yes_no("Do you want to see the round history? ")
+show_history = yes_no("⏪ Do you want to see the round history? ⏪ ")
 if show_history:
     if len(all_round_history) == 0:
         print("There is no history to show.")
