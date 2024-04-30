@@ -77,7 +77,7 @@ def math_quiz(num_questions, operations, num_range, round_number):
                 print("Invalid input! Please enter a valid integer.")
 
         is_correct = check_answer(num1, operator, num2, user_answer, correct_answer)
-        round_history.append((round_number, num1, operator, num2, user_answer, is_correct))  # Add round history
+        round_history.append((round_number, i + 1, num1, operator, num2, user_answer, is_correct))  # Add round history
         if is_correct:
             print("🟩Correct!\n")
             score += 1
@@ -176,9 +176,17 @@ while True:
         break
 
 while True:
-    num_questions_per_round_input = int_check("How many questions would you like per round? ")
-    num_questions_per_round = num_questions_per_round_input
-    print(f"You have chosen {num_questions_per_round_input} questions.")
+    while True:
+        num_questions_per_round_input = input("How many questions would you like per round? ")
+        try:
+            num_questions_per_round = int(num_questions_per_round_input)
+            if num_questions_per_round < 1:
+                print("Please enter a positive integer.")
+            else:
+                break
+        except ValueError:
+            print("Please enter a valid integer.")
+    print(f"You have chosen {num_questions_per_round} questions.")
     break
 
 while rounds_played < num_rounds:
@@ -225,12 +233,12 @@ if show_history:
         print("\nRound History:")
         current_round = 0
         for round_data in all_round_history:
-            round_number, num1, operator, num2, user_answer, is_correct = round_data
+            round_number, question_number, num1, operator, num2, user_answer, is_correct = round_data
             if round_number != current_round:
                 print(f"\nRound {round_number}:")
                 current_round = round_number
             result = "Correct" if is_correct else "Incorrect"
-            print(f"Question: {num1} {operator} {num2} = {user_answer} ({result})")
+            print(f"Question {question_number}: {num1} {operator} {num2} = {user_answer} ({result})")
 
 print()
 print("Thanks for playing!")
