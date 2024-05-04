@@ -1,3 +1,4 @@
+
 import random
 
 # Global variable to store round history
@@ -101,11 +102,11 @@ def math_quiz(num_questions, operations, num_range, round_number):
         is_correct = check_answer(operator, user_answer, correct_answer)
         round_history.append((round_number, i + 1, num1, operator, num2, user_answer, is_correct))  # Add round history
         if is_correct:
-            print("🟩Correct!\n")
+            print("✅Correct!\n")
             score += points_per_question  # Update score based on difficulty
             correct_answers += 1
         else:
-            print(f"🟥Wrong! The correct answer is {correct_answer}\n")
+            print(f"❌Incorrect! The correct answer is {correct_answer}\n")
 
         # Update total points scored for each difficulty level if the answer is correct
         update_difficulty_points(difficulty_name(num_range[1]), points_per_question, is_correct)
@@ -282,7 +283,7 @@ if show_history:
             if round_number != current_round:
                 print(f"\nRound {round_number}:")
                 current_round = round_number
-            result = "🟢Correct" if is_correct else "🔴Incorrect"
+            result = "✅Correct" if is_correct else "❌Incorrect"
             print(f"Question {question_number}: ({result}) {num1} {operator} {num2} = {user_answer}")
 
 # Ask user if they want to see the statistics
@@ -296,4 +297,4 @@ if show_statistics:
     print(f"Total points altogether: {sum(difficulty_points.values())}")
 
 print()
-print("Thanks for playing!")
+print("Thanks for playing!👋🏻")
