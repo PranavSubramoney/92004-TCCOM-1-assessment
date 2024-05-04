@@ -66,6 +66,18 @@ def check_answer(operator, user_answer, correct_answer):
         return False  # Handle unknown operation
 
 
+# Function to determine the number of tries based on difficulty mode
+def determine_num_tries(difficulty_name):
+    if difficulty_name == 'Easy':
+        return 1
+    elif difficulty_name == 'Normal':
+        return 2
+    elif difficulty_name == 'Hard':
+        return 3
+    elif difficulty_name == 'Extra Hard':
+        return 4
+
+
 # Main routine
 def math_quiz(num_questions, operations, num_range, round_number):
     print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
@@ -73,37 +85,43 @@ def math_quiz(num_questions, operations, num_range, round_number):
     round_history.clear()  # Clear round history for each new round
 
     # Determine points per question based on difficulty
-    if num_range[1] == 10:
-        points_per_question = 1
-    elif num_range[1] == 20:
-        points_per_question = 2
-    elif num_range[1] == 100:
-        points_per_question = 3
-    elif num_range[1] == 1000:
-        points_per_question = 4
+    points_per_question = determine_num_tries(difficulty_name(num_range[1]))
 
     for i in range(num_questions):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"Question {i + 1}: What is {num1} {operator} {num2}?")
 
-        while True:
+        # Get number of tries based on difficulty
+        num_tries = points_per_question
+
+        while num_tries > 0:
             user_answer = input("Your answer: ")
             if user_answer.lower() == "quit":  # Check if user wants to quit
+                print("You have quit the round.")
+                total_points = correct_answers * points_per_question
+                update_difficulty_points(difficulty_name(num_range[1]), total_points)  # Update points for the current round
                 return False
             try:
                 user_answer = int(user_answer)  # Convert user input to integer
-                break
             except ValueError:
                 print("Invalid input! Please enter a valid integer.")
+                continue  # Ask for input again if it's not a valid integer
+            if check_answer(operator, user_answer, correct_answer):
+                print("✅Correct!\n")
+                correct_answers += 1
+                break  # Break the loop if the answer is correct
+            else:
+                num_tries -= 1
+                if num_tries == 0:
+                    print(f"❌Incorrect! The correct answer is {correct_answer}\n")
+                else:
+                    print(f"❌Incorrect! You have {num_tries} tries left.\n")
+                if num_tries > 0:  # If there are remaining tries, prompt the user to answer again
+                    continue  # Continue to prompt the user for an answer
+                break  # Break the loop if there are no remaining tries
 
-        is_correct = check_answer(operator, user_answer, correct_answer)
-        round_history.append((round_number, i + 1, num1, operator, num2, user_answer, is_correct))  # Add round history
-
-        if is_correct:
-            print("✅Correct!\n")
-            correct_answers += 1
-        else:
-            print(f"❌Incorrect! The correct answer is {correct_answer}\n")
+        # Add round history after each question
+        round_history.append((round_number, i + 1, num1, operator, num2, user_answer, check_answer(operator, user_answer, correct_answer)))
 
     total_questions = num_questions
     score = correct_answers * points_per_question  # Calculate total score
@@ -294,6 +312,9 @@ while rounds_played < num_rounds:
     if not math_quiz(num_questions_per_round, operations, num_range, rounds_played):
         # If user quits mid-round, add the round history to all rounds history
         all_round_history.extend(round_history)
+        # Add points to statistics even if user quits mid-round
+        total_points = sum([points for difficulty, points in difficulty_points.items()])
+        print(f"\nYou've earned {total_points} points so far.")
         break  # Break the loop if user quits
 
     # Add round history to all rounds history
