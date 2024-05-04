@@ -8,9 +8,8 @@ difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
 
 
 # Function to update total points scored for each difficulty level if the answer is correct
-def update_difficulty_points(difficulty, points, is_correct):
-    if is_correct:
-        difficulty_points[difficulty] += points
+def update_difficulty_points(difficulty, points):
+    difficulty_points[difficulty] += points
 
 
 # Function to choose difficulty level
@@ -70,7 +69,6 @@ def check_answer(operator, user_answer, correct_answer):
 # Main routine
 def math_quiz(num_questions, operations, num_range, round_number):
     print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
-    score = 0
     correct_answers = 0
     round_history.clear()  # Clear round history for each new round
 
@@ -88,47 +86,31 @@ def math_quiz(num_questions, operations, num_range, round_number):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"Question {i + 1}: What is {num1} {operator} {num2}?")
 
-        # Determine number of tries based on difficulty level
-        if num_range[1] == 10:
-            max_tries = 1  # Easy: 1 try
-        elif num_range[1] == 20:
-            max_tries = 2  # Normal: 2 tries
-        elif num_range[1] == 100:
-            max_tries = 3  # Hard: 3 tries
-        elif num_range[1] == 1000:
-            max_tries = 4  # Extra Hard: 4 tries
+        while True:
+            user_answer = input("Your answer: ")
+            if user_answer.lower() == "quit":  # Check if user wants to quit
+                return False
+            try:
+                user_answer = int(user_answer)  # Convert user input to integer
+                break
+            except ValueError:
+                print("Invalid input! Please enter a valid integer.")
 
-        for attempt in range(1, max_tries + 1):
-            while True:
-                user_answer = input("Your answer: ")
-                if user_answer.lower() == "quit":  # Check if user wants to quit
-                    return False
-                try:
-                    user_answer = int(user_answer)  # Convert user input to integer
-                    break
-                except ValueError:
-                    print("Invalid input! Please enter a valid integer.")
+        is_correct = check_answer(operator, user_answer, correct_answer)
+        round_history.append((round_number, i + 1, num1, operator, num2, user_answer, is_correct))  # Add round history
 
-            is_correct = check_answer(operator, user_answer, correct_answer)
-            if is_correct:
-                print("✅Correct!\n")
-                score += points_per_question  # Update score based on difficulty
-                correct_answers += 1
-                break  # Break out of the loop if the answer is correct
-            else:
-                remaining_tries = max_tries - attempt
-                if remaining_tries > 0:
-                    print(f"❌Incorrect! You have {remaining_tries} {'try' if remaining_tries == 1 else 'tries'} left.")
-                else:
-                    print(f"❌Incorrect! The correct answer is {correct_answer}\n")
+        if is_correct:
+            print("✅Correct!\n")
+            correct_answers += 1
+        else:
+            print(f"❌Incorrect! The correct answer is {correct_answer}\n")
 
-            # Update total points scored for each difficulty level if the answer is correct
-            update_difficulty_points(difficulty_name(num_range[1]), points_per_question, is_correct)
-
-    total_points = score
-    total_questions = num_questions * points_per_question
+    total_questions = num_questions
+    score = correct_answers * points_per_question  # Calculate total score
+    update_difficulty_points(difficulty_name(num_range[1]), score)  # Update points for the current round
     percentage_correct = (correct_answers / num_questions) * 100 if num_questions > 0 else 0
-    print(f"You scored {score} out of {total_questions} points.")
+    print()
+    print(f"You scored {score} out of {total_questions * points_per_question} points.")
     print(
         f"You answered {correct_answers} questions correctly out of {num_questions}, which is {percentage_correct:.2f}%.\n")
     return True
