@@ -1,4 +1,3 @@
-
 import random
 
 # Global variable to store round history
@@ -89,27 +88,42 @@ def math_quiz(num_questions, operations, num_range, round_number):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"Question {i + 1}: What is {num1} {operator} {num2}?")
 
-        while True:
-            user_answer = input("Your answer: ")
-            if user_answer.lower() == "quit":  # Check if user wants to quit
-                return False
-            try:
-                user_answer = int(user_answer)  # Convert user input to integer
-                break
-            except ValueError:
-                print("Invalid input! Please enter a valid integer.")
+        # Determine number of tries based on difficulty level
+        if num_range[1] == 10:
+            max_tries = 1  # Easy: 1 try
+        elif num_range[1] == 20:
+            max_tries = 2  # Normal: 2 tries
+        elif num_range[1] == 100:
+            max_tries = 3  # Hard: 3 tries
+        elif num_range[1] == 1000:
+            max_tries = 4  # Extra Hard: 4 tries
 
-        is_correct = check_answer(operator, user_answer, correct_answer)
-        round_history.append((round_number, i + 1, num1, operator, num2, user_answer, is_correct))  # Add round history
-        if is_correct:
-            print("✅Correct!\n")
-            score += points_per_question  # Update score based on difficulty
-            correct_answers += 1
-        else:
-            print(f"❌Incorrect! The correct answer is {correct_answer}\n")
+        for attempt in range(1, max_tries + 1):
+            while True:
+                user_answer = input("Your answer: ")
+                if user_answer.lower() == "quit":  # Check if user wants to quit
+                    return False
+                try:
+                    user_answer = int(user_answer)  # Convert user input to integer
+                    break
+                except ValueError:
+                    print("Invalid input! Please enter a valid integer.")
 
-        # Update total points scored for each difficulty level if the answer is correct
-        update_difficulty_points(difficulty_name(num_range[1]), points_per_question, is_correct)
+            is_correct = check_answer(operator, user_answer, correct_answer)
+            if is_correct:
+                print("✅Correct!\n")
+                score += points_per_question  # Update score based on difficulty
+                correct_answers += 1
+                break  # Break out of the loop if the answer is correct
+            else:
+                remaining_tries = max_tries - attempt
+                if remaining_tries > 0:
+                    print(f"❌Incorrect! You have {remaining_tries} {'try' if remaining_tries == 1 else 'tries'} left.")
+                else:
+                    print(f"❌Incorrect! The correct answer is {correct_answer}\n")
+
+            # Update total points scored for each difficulty level if the answer is correct
+            update_difficulty_points(difficulty_name(num_range[1]), points_per_question, is_correct)
 
     total_points = score
     total_questions = num_questions * points_per_question
@@ -173,26 +187,26 @@ Select the number of questions you'd like to answer in each round.
 For each round, choose one of the four basic operations: addition (+), subtraction (-), 
 multiplication (*), or division (/). You can also choose the random option to answer a mix
 of all operations.
-    
+
 4. Choose the Difficulty Level:
 You'll be asked to select a difficulty level for each round:
 - 🟩 Easy: Numbers from 1 to 10, suitable for beginners.
 - ⬜ Normal: Numbers from 1 to 20, ideal for players with some math experience.
 - 🟨 Hard: Numbers from 1 to 100, challenging for confident players.
 - 🟥 Extra Hard: Numbers from 1 to 1000, for advanced players seeking a significant challenge.    
-    
+
 5. Solve the Problems:
 Once you've chosen your preferences, you'll be presented with math problems based on your choices. 
 Answer the questions by just inputting the correct number and pressing enter.
 You will receive instant feedback on each answer. If you answer incorrectly you will be presented
 with the correct answer. If answered correctly, you will receive points based on your chosen difficulty.
-    
+
 6. Check your progress:
 After each round see how many points you scored, including the percentage of questions you got correct.   
-    
+
 7. Quit Anytime:
 Exit the quiz at any time by entering "quit" as your answer to a question.
-    
+
 8. Scoring system:
 View all the questions you you answered by entering yes or y for short when asked to see your round history.
 You will be shown whether you got the questions correct or incorrect with the correct answers.    
@@ -202,7 +216,7 @@ The point system is based on difficulty. This is how it works:
 ⬜ Normal - 2 points
 🟨 Hard - 3 points
 🟥 Extra Hard - 4 points
-   
+
 Have fun and good luck with the Math Quiz! 🎉
     ''')
 
