@@ -3,7 +3,17 @@ import random
 # Global variable to store round history
 round_history = []
 
+# Global dictionary to store total points scored for each difficulty level
+difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
 
+
+# Function to update total points scored for each difficulty level if the answer is correct
+def update_difficulty_points(difficulty, points, is_correct):
+    if is_correct:
+        difficulty_points[difficulty] += points
+
+
+# Function to choose difficulty level
 def choose_difficulty():
     print("Choose a difficulty level:")
     print("1.🟩 Easy (1-10)")
@@ -50,7 +60,7 @@ def generate_question(operations, num_range):
 
 
 # Function to check if the user's answer is correct
-def check_answer(num1, operator, num2, user_answer, correct_answer):
+def check_answer(operator, user_answer, correct_answer):
     if operator in ['+', '-', '*', '/']:
         return user_answer == correct_answer
     else:
@@ -61,7 +71,19 @@ def check_answer(num1, operator, num2, user_answer, correct_answer):
 def math_quiz(num_questions, operations, num_range, round_number):
     print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
     score = 0
+    correct_answers = 0
     round_history.clear()  # Clear round history for each new round
+
+    # Determine points per question based on difficulty
+    if num_range[1] == 10:
+        points_per_question = 1
+    elif num_range[1] == 20:
+        points_per_question = 2
+    elif num_range[1] == 100:
+        points_per_question = 3
+    elif num_range[1] == 1000:
+        points_per_question = 4
+
     for i in range(num_questions):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"Question {i + 1}: What is {num1} {operator} {num2}?")
@@ -76,14 +98,24 @@ def math_quiz(num_questions, operations, num_range, round_number):
             except ValueError:
                 print("Invalid input! Please enter a valid integer.")
 
-        is_correct = check_answer(num1, operator, num2, user_answer, correct_answer)
+        is_correct = check_answer(operator, user_answer, correct_answer)
         round_history.append((round_number, i + 1, num1, operator, num2, user_answer, is_correct))  # Add round history
         if is_correct:
             print("🟩Correct!\n")
-            score += 1
+            score += points_per_question  # Update score based on difficulty
+            correct_answers += 1
         else:
             print(f"🟥Wrong! The correct answer is {correct_answer}\n")
-    print(f"You scored {score} out of {num_questions}.\n")
+
+        # Update total points scored for each difficulty level if the answer is correct
+        update_difficulty_points(difficulty_name(num_range[1]), points_per_question, is_correct)
+
+    total_points = score
+    total_questions = num_questions * points_per_question
+    percentage_correct = (correct_answers / num_questions) * 100 if num_questions > 0 else 0
+    print(f"You scored {score} out of {total_questions} points.")
+    print(
+        f"You answered {correct_answers} questions correctly out of {num_questions}, which is {percentage_correct:.2f}%.\n")
     return True
 
 
@@ -189,6 +221,19 @@ while True:
     print(f"You have chosen {num_questions_per_round} questions.")
     break
 
+
+# Function to get the difficulty name based on the range
+def difficulty_name(difficulty_range):
+    if difficulty_range == 10:
+        return 'Easy'
+    elif difficulty_range == 20:
+        return 'Normal'
+    elif difficulty_range == 100:
+        return 'Hard'
+    elif difficulty_range == 1000:
+        return 'Extra Hard'
+
+
 while rounds_played < num_rounds:
     if mode == "infinite":
         rounds_heading = f"\n ️♾️️️️🔄 Round {rounds_played + 1} of (Infinite mode) 🔄♾️"
@@ -225,20 +270,30 @@ while rounds_played < num_rounds:
 
 # Print history for all rounds
 print()
-show_history = yes_no("⏪ Do you want to see the round history? ⏪ ")
+show_history = yes_no("⏱️ Do you want to see the round history? ⏱️ ")
 if show_history:
     if len(all_round_history) == 0:
         print("There is no history to show.")
     else:
-        print("\nRound History:")
+        print("\n⏪ Round History ⏪:")
         current_round = 0
         for round_data in all_round_history:
             round_number, question_number, num1, operator, num2, user_answer, is_correct = round_data
             if round_number != current_round:
                 print(f"\nRound {round_number}:")
                 current_round = round_number
-            result = "Correct" if is_correct else "Incorrect"
-            print(f"Question {question_number}: {num1} {operator} {num2} = {user_answer} ({result})")
+            result = "🟢Correct" if is_correct else "🔴Incorrect"
+            print(f"Question {question_number}: ({result}) {num1} {operator} {num2} = {user_answer}")
+
+# Ask user if they want to see the statistics
+print()
+show_statistics = yes_no("📊 Do you want to see the statistics? 📊 ")
+if show_statistics:
+    # Print statistics section under round history
+    print("\nStatistics:")
+    for difficulty, points in difficulty_points.items():
+        print(f"Total points scored for {difficulty}: {points}")
+    print(f"Total points altogether: {sum(difficulty_points.values())}")
 
 print()
 print("Thanks for playing!")
