@@ -159,17 +159,51 @@ def yes_no(question):
 def instructions():
     print('''
     *** Instructions ***
-Hey there! Welcome to the Math Quiz.
-To begin, decide how many rounds you want to play or test yourself in infinite mode.
-If you choose infinite mode, you'll play until you decide to stop. Just press Enter for infinite mode.
-Solve the Problems:
-You can choose one of the four basic operations: Addition, Subtraction, Multiplication and Division.
-You will be able to change your operation every round so you don't get bored of one operation.
-If you answer incorrectly, we'll gently steer you in the right direction with the correct answer.
-You can exit the quiz during any round. Just enter "quit" as your answer and the quiz will end.
-Check Your Progress:
-Curious to see how you did? Look at your progress at the end of the game with the Quiz History option.
-Good luck!
+
+Hey there! Welcome to the Math Quiz. Here's how to play:
+
+1. Choose the Number of Rounds:
+Decide how many rounds you want to answer. You can choose a specific number or test 
+yourself in infinite mode by pressing enter.
+
+2. Choose the Number of Questions per Round:
+Select the number of questions you'd like to answer in each round.
+
+3. Select the Operation:
+For each round, choose one of the four basic operations: addition (+), subtraction (-), 
+multiplication (*), or division (/). You can also choose the random option to answer a mix
+of all operations.
+    
+4. Choose the Difficulty Level:
+You'll be asked to select a difficulty level for each round:
+- 🟩 Easy: Numbers from 1 to 10, suitable for beginners.
+- ⬜ Normal: Numbers from 1 to 20, ideal for players with some math experience.
+- 🟨 Hard: Numbers from 1 to 100, challenging for confident players.
+- 🟥 Extra Hard: Numbers from 1 to 1000, for advanced players seeking a significant challenge.    
+    
+5. Solve the Problems:
+Once you've chosen your preferences, you'll be presented with math problems based on your choices. 
+Answer the questions by just inputting the correct number and pressing enter.
+You will receive instant feedback on each answer. If you answer incorrectly you will be presented
+with the correct answer. If answered correctly, you will receive points based on your chosen difficulty.
+    
+6. Check your progress:
+After each round see how many points you scored, including the percentage of questions you got correct.   
+    
+7. Quit Anytime:
+Exit the quiz at any time by entering "quit" as your answer to a question.
+    
+8. Scoring system:
+View all the questions you you answered by entering yes or y for short when asked to see your round history.
+You will be shown whether you got the questions correct or incorrect with the correct answers.    
+Also see how many points you scored in total with the statistics option.
+The point system is based on difficulty. This is how it works:
+🟩 Easy - 1 point
+⬜ Normal - 2 points
+🟨 Hard - 3 points
+🟥 Extra Hard - 4 points
+   
+Have fun and good luck with the Math Quiz! 🎉
     ''')
 
 
@@ -248,7 +282,7 @@ while rounds_played < num_rounds:
 
     # Asking for operation for each round
     while True:
-        operation_choice = input("Which operation do you want? (+, -, *, /, random): ").lower()
+        operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
         if operation_choice in ['+', '-', '*', '/', 'random']:
             if operation_choice == 'random':
                 operations = ['+', '-', '*', '/']  # Include all operations
