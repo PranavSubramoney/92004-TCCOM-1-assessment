@@ -148,7 +148,8 @@ def math_quiz(num_questions, operations, num_range):
     print()
     print(f"You scored {score} out of {total_questions * points_per_question} points.")
     if num_questions != 10**9:
-        print(f"You answered {correct_answers} questions correctly out of {num_questions}, which is {int(percentage_correct)}%.\n")
+        print(f"You answered {correct_answers} questions correctly out of {num_questions}. You got "
+              f"{int(percentage_correct)}% correct.\n")
     else:
         print("You answered an infinite number of questions.")
     return True
@@ -157,7 +158,7 @@ def math_quiz(num_questions, operations, num_range):
 # Integer checker function
 def int_check(question):
     while True:
-        error = "Please enter an integer that is 1 or more, or leave it blank for infinite mode:"
+        error = "Please enter an integer that is 1 or more, or push enter for infinite questions:"
 
         to_check = input(question)
 
@@ -192,10 +193,9 @@ def yes_no(question):
 
 def instructions():
     print('''
-    *** Instructions ***
+📝 Instructions 📝
 
 Hey there! Welcome to the Math Quiz. Here's how to answer:
-y:
 
 1. Choose the Number of Questions:
 Decide how many questions you want to answer. You can choose a specific number or test 
@@ -254,29 +254,22 @@ if want_instructions:
 operations = ['+', '-', '*', '/']
 
 # Ask for the number of questions
-num_questions_per_round = int_check("How many questions would you like per round? ")
+num_questions = int_check("How many questions would you like? ")
 
-while True:
-    # Asking for operation for each round
-    operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
-    if operation_choice in ['+', '-', '*', '/', 'random']:
-        if operation_choice == 'random':
-            operations = ['+', '-', '*', '/']  # Include all operations
-        else:
-            operations = [operation_choice]
-        break
+# Asking for operation
+operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
+if operation_choice in ['+', '-', '*', '/', 'random']:
+    if operation_choice == 'random':
+        operations = ['+', '-', '*', '/']  # Include all operations
     else:
-        print("Invalid operation! Please choose either +, -, *, /, or random.")
+        operations = [operation_choice]
+else:
+    print("Invalid operation! Please choose either +, -, *, /, or random.")
 
-num_range = (1, choose_difficulty())  # Ask for difficulty for each round
+num_range = (1, choose_difficulty())  # Ask for difficulty
 
-# Main loop for quiz
-while True:
-    math_quiz_result = math_quiz(num_questions_per_round, operations, num_range)
-
-    # Check if the user wants to continue the quiz or quit
-    if not math_quiz_result:
-        break
+# Start quiz directly without rounds
+math_quiz(num_questions, operations, num_range)
 
 # Ask user if they want to see the quiz history
 print()
