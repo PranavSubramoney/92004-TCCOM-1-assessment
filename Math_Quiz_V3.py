@@ -149,9 +149,7 @@ def math_quiz(num_questions, operations, num_range):
     print(f"You scored {score} out of {total_questions * points_per_question} points.")
     if num_questions != 10**9:
         print(f"You answered {correct_answers} questions correctly out of {num_questions}. You got "
-              f"{int(percentage_correct)}% correct.\n")
-    else:
-        print("You answered an infinite number of questions.")
+              f"{int(percentage_correct)}% questions correct.\n")
     return True
 
 
@@ -254,8 +252,12 @@ if want_instructions:
 operations = ['+', '-', '*', '/']
 
 # Ask for the number of questions
-num_questions = int_check("How many questions would you like? ")
-
+print()
+num_questions = int_check("How many questions would you like? Enter a number or push enter for an infinite amount: ")
+if num_questions == "":
+    print("You chose infinite questions.")
+else:
+    print(f"You chose {num_questions} questions.")
 # Asking for operation
 operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
 if operation_choice in ['+', '-', '*', '/', 'random']:
