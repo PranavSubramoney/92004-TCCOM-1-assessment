@@ -1,15 +1,23 @@
 import random
 
-# Global variable to store round history
-round_history = []
+# Stores round history
+question_history = []
 
-# Global dictionary to store total points scored for each difficulty level
+# Stores total points scored for each difficulty level
 difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
+
+# Stores total number of questions answered for each difficulty level
+difficulty_questions_answered = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
 
 
 # Function to update total points scored for each difficulty level if the answer is correct
 def update_difficulty_points(difficulty, points):
     difficulty_points[difficulty] += points
+
+
+# Function to update total questions answered for each difficulty level
+def update_difficulty_questions(difficulty):
+    difficulty_questions_answered[difficulty] += 1
 
 
 # Function to choose difficulty level
@@ -91,21 +99,25 @@ def determine_num_tries(difficulty_name):
 
 
 # Main routine
+# Main routine
 def math_quiz(num_questions, operations, num_range):
     print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
     correct_answers = 0
-    round_history.clear()  # Clear round history for each new round
+    question_history.clear()  # Clear round history for each new round
+    difficulty_name_str = difficulty_name(num_range[1])
 
     # Determine points per question based on difficulty
-    points_per_question = determine_num_tries(difficulty_name(num_range[1]))
+    points_per_question = determine_num_tries(difficulty_name_str)
 
     # If num_questions is infinite, set a large number as a placeholder
     if num_questions == "infinite":
-        num_questions = 10**9  # Or any sufficiently large number
+        num_questions_placeholder = 10**9  # Or any sufficiently large number
     else:
-        num_questions = int(num_questions)  # Convert to integer
+        num_questions_placeholder = int(num_questions)  # Convert to integer
 
-    for i in range(num_questions):
+    difficulty_questions_answered[difficulty_name_str] += num_questions_placeholder
+
+    for i in range(num_questions_placeholder):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"\nQuestion {i + 1}: What is {num1} {operator} {num2}?")
 
@@ -117,7 +129,7 @@ def math_quiz(num_questions, operations, num_range):
             if user_answer.lower() == "quit":  # Check if user wants to quit
                 print("You have quit the quiz.")
                 total_points = correct_answers * points_per_question
-                update_difficulty_points(difficulty_name(num_range[1]), total_points)
+                update_difficulty_points(difficulty_name_str, total_points)
                 return False
             try:
                 user_answer = int(user_answer)  # Convert user input to integer
@@ -139,24 +151,24 @@ def math_quiz(num_questions, operations, num_range):
                 break  # Break the loop if there are no remaining tries
 
         # Add round history after each question
-        round_history.append((i + 1, num1, operator, num2, user_answer, check_answer(operator, user_answer, correct_answer)))
+        question_history.append((i + 1, num1, operator, num2, user_answer, check_answer(operator, user_answer,
+                                                                                        correct_answer)))
 
-    total_questions = "infinite" if num_questions == 10**9 else num_questions
+    total_questions = "infinite" if num_questions == "infinite" else num_questions_placeholder
     score = correct_answers * points_per_question  # Calculate total score
-    update_difficulty_points(difficulty_name(num_range[1]), score)  # Update points for the current round
-    percentage_correct = (correct_answers / num_questions) * 100 if num_questions != 10**9 else 0
+    update_difficulty_points(difficulty_name_str, score)  # Update points for the current round
+    (correct_answers / num_questions_placeholder) * 100 if num_questions != "infinite" else 0
     print()
     print(f"You scored {score} out of {total_questions * points_per_question} points.")
-    if num_questions != 10**9:
-        print(f"You answered {correct_answers} questions correctly out of {num_questions}. You got "
-              f"{int(percentage_correct)}% questions correct.\n")
+    if num_questions != "infinite":
+        print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
     return True
 
 
 # Integer checker function
 def int_check(question):
     while True:
-        error = "Please enter an integer that is 1 or more, or push enter for infinite questions:"
+        error = "Please enter an integer that is 1 or more, or push enter for infinite questions."
 
         to_check = input(question)
 
@@ -259,34 +271,36 @@ if num_questions == "":
 else:
     print(f"You chose {num_questions} questions.")
 # Asking for operation
-operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
-if operation_choice in ['+', '-', '*', '/', 'random']:
-    if operation_choice == 'random':
-        operations = ['+', '-', '*', '/']  # Include all operations
+while True:
+    operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
+    if operation_choice in ['+', '-', '*', '/', 'random']:
+        if operation_choice == 'random':
+            operations = ['+', '-', '*', '/']  # Include all operations
+        else:
+            operations = [operation_choice]
+        break
     else:
-        operations = [operation_choice]
-else:
-    print("Invalid operation! Please choose either +, -, *, /, or random.")
-
+        print("Invalid operation! Please choose either +, -, *, /, or random.")
 num_range = (1, choose_difficulty())  # Ask for difficulty
 
-# Start quiz directly without rounds
+# Start quiz
 math_quiz(num_questions, operations, num_range)
 
 # Ask user if they want to see the quiz history
 print()
 show_quiz_history = yes_no("⏱️ Do you want to see the quiz history? ⏱️ ")
 if show_quiz_history:
-    if len(round_history) == 0:
+    if len(question_history) == 0:
         print("There is no quiz history to show.")
     else:
         print("\n⏪ Quiz History ⏪:")
         num_correct = 0
         num_incorrect = 0
-        for question_num, num1, operator, num2, user_answer, is_correct in round_history:
+        for question_num, num1, operator, num2, user_answer, is_correct in question_history:
             result = "✅ Correct" if is_correct else f"❌ Incorrect"
-            correct_answer = num1 + num2 if operator == '+' else num1 - num2 if operator == '-' else num1 * num2 if operator == '*' else num1 // num2
-            print(f"\nQuestion {question_num}/{len(round_history)}: What is {num1} {operator} {num2}?")
+            correct_answer = num1 + num2 if operator == '+' else num1 - num2 if operator == '-' else num1 * num2 if (
+                    operator == '*') else num1 // num2
+            print(f"\nQuestion {question_num}/{len(question_history)}: What is {num1} {operator} {num2}?")
             if not is_correct:
                 print(f"Your answer: {user_answer} (Correct answer: {correct_answer})")
                 num_incorrect += 1
@@ -300,17 +314,21 @@ if show_quiz_history:
         print(f"Total correct answers: {num_correct}")
         print(f"Total incorrect answers: {num_incorrect}")
 
-# Rest of the code remains the same
-
 # Ask user if they want to see the statistics
 print()
 show_statistics = yes_no("📊 Do you want to see the statistics? 📊 ")
 if show_statistics:
-    # Print statistics section under round history
+    # Print statistics section for the chosen difficulty
+    difficulty = difficulty_name(num_range[1])
+    points = difficulty_points[difficulty]
+    questions_answered = difficulty_questions_answered[difficulty]
+    total_attempted = num_correct + num_incorrect  # Calculate total attempted questions
+    percentage_correct = (num_correct / total_attempted) * 100 if total_attempted != 0 else 0
+
     print("\nStatistics:")
-    for difficulty, points in difficulty_points.items():
-        print(f"Total points scored for {difficulty} mode: {points}")
-    print(f"Total points altogether: {sum(difficulty_points.values())}")
+    print(f"Total points scored for {difficulty} mode: {points}")
+    print(f"Percentage of questions correct: {int(percentage_correct)}%")
+
 
 print()
 print("Thanks for playing!👋🏻")
