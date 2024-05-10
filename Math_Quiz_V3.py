@@ -99,21 +99,19 @@ def determine_num_tries(difficulty_name):
 
 
 # Main routine
-# Main routine
 def math_quiz(num_questions, operations, num_range):
     print(f"You've chosen {operations} operation(s) with numbers in the range {num_range}.\n")
     correct_answers = 0
-    question_history.clear()  # Clear round history for each new round
+    num_correct = 0
+    num_incorrect = 0
+    question_history.clear()
     difficulty_name_str = difficulty_name(num_range[1])
-
-    # Determine points per question based on difficulty
     points_per_question = determine_num_tries(difficulty_name_str)
 
-    # If num_questions is infinite, set a large number as a placeholder
     if num_questions == "infinite":
-        num_questions_placeholder = 10**9  # Or any sufficiently large number
+        num_questions_placeholder = 10 ** 9
     else:
-        num_questions_placeholder = int(num_questions)  # Convert to integer
+        num_questions_placeholder = int(num_questions)
 
     difficulty_questions_answered[difficulty_name_str] += num_questions_placeholder
 
@@ -121,48 +119,58 @@ def math_quiz(num_questions, operations, num_range):
         num1, operator, num2, correct_answer = generate_question(operations, num_range)
         print(f"\nQuestion {i + 1}: What is {num1} {operator} {num2}?")
 
-        # Get number of tries based on difficulty
         num_tries = points_per_question
+        attempted_numbers = set()
 
         while num_tries > 0:
             user_answer = input("Your answer: ")
-            if user_answer.lower() == "quit":  # Check if user wants to quit
+
+            if user_answer.lower() == "quit":
                 print("You have quit the quiz.")
                 total_points = correct_answers * points_per_question
                 update_difficulty_points(difficulty_name_str, total_points)
-                return False
+                return False, num_correct, num_incorrect
+
             try:
-                user_answer = int(user_answer)  # Convert user input to integer
+                user_answer = int(user_answer)
             except ValueError:
                 print("Invalid input! Please enter a valid integer.")
-                continue  # Ask for input again if it's not a valid integer
+                continue
+
+            if user_answer in attempted_numbers:
+                print("You have already tried this number. Please enter a different one.")
+                continue
+
+            attempted_numbers.add(user_answer)
+
             if check_answer(operator, user_answer, correct_answer):
                 print("✅ Correct!")
                 correct_answers += 1
-                break  # Break the loop if the answer is correct
+                num_correct += 1
+                break
             else:
                 num_tries -= 1
+                num_incorrect += 1
                 if num_tries == 0:
                     print(f"❌ Incorrect! The correct answer is {correct_answer}")
                 else:
                     print(f"❌ Incorrect! You have {num_tries} tries left.")
-                if num_tries > 0:  # If there are remaining tries, prompt the user to answer again
-                    continue  # Continue to prompt the user for an answer
-                break  # Break the loop if there are no remaining tries
+                if num_tries > 0:
+                    continue
+                break
 
-        # Add round history after each question
-        question_history.append((i + 1, num1, operator, num2, user_answer, check_answer(operator, user_answer,
-                                                                                        correct_answer)))
+        question_history.append(
+            (i + 1, num1, operator, num2, user_answer, check_answer(operator, user_answer, correct_answer)))
 
     total_questions = "infinite" if num_questions == "infinite" else num_questions_placeholder
-    score = correct_answers * points_per_question  # Calculate total score
-    update_difficulty_points(difficulty_name_str, score)  # Update points for the current round
+    score = correct_answers * points_per_question
+    update_difficulty_points(difficulty_name_str, score)
     (correct_answers / num_questions_placeholder) * 100 if num_questions != "infinite" else 0
     print()
     print(f"You scored {score} out of {total_questions * points_per_question} points.")
     if num_questions != "infinite":
         print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
-    return True
+    return True, num_correct, num_incorrect
 
 
 # Integer checker function
@@ -284,7 +292,7 @@ while True:
 num_range = (1, choose_difficulty())  # Ask for difficulty
 
 # Start quiz
-math_quiz(num_questions, operations, num_range)
+result, num_correct, num_incorrect = math_quiz(num_questions, operations, num_range)
 
 # Ask user if they want to see the quiz history
 print()
@@ -294,8 +302,6 @@ if show_quiz_history:
         print("There is no quiz history to show.")
     else:
         print("\n⏪ Quiz History ⏪:")
-        num_correct = 0
-        num_incorrect = 0
         for question_num, num1, operator, num2, user_answer, is_correct in question_history:
             result = "✅ Correct" if is_correct else f"❌ Incorrect"
             correct_answer = num1 + num2 if operator == '+' else num1 - num2 if operator == '-' else num1 * num2 if (
@@ -303,10 +309,8 @@ if show_quiz_history:
             print(f"\nQuestion {question_num}/{len(question_history)}: What is {num1} {operator} {num2}?")
             if not is_correct:
                 print(f"Your answer: {user_answer} (Correct answer: {correct_answer})")
-                num_incorrect += 1
             else:
                 print(f"Your answer: {user_answer}")
-                num_correct += 1
             print(f"Result: {result}")
 
         # Print summary
@@ -328,7 +332,6 @@ if show_statistics:
     print("\nStatistics:")
     print(f"Total points scored for {difficulty} mode: {points}")
     print(f"Percentage of questions correct: {int(percentage_correct)}%")
-
 
 print()
 print("Thanks for playing!👋🏻")
