@@ -114,6 +114,7 @@ def math_quiz(num_questions, ops, num_range):
     difficulty_name_str = difficulty_name(num_range[1])
     points_per_question = determine_num_tries(difficulty_name_str)
 
+    # placeholder number for infinite questions
     if num_questions == "infinite":
         num_questions_placeholder = 10 ** 9
     else:
@@ -355,4 +356,4 @@ if show_statistics:
     print(f"Percentage of questions correct: {int(percentage_correct)}%")
 
 print()
-print("😀 Thank you for attempting the quiz! 😀")
+print("😀 Thanks for attempting the quiz! 😀")
