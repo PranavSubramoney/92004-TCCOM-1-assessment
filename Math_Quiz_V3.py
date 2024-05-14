@@ -158,8 +158,11 @@ def math_quiz(num_questions, ops, num_range):
             if check_answer(operator, user_answer, correct_answer):
                 # updates / notifies user if their answer is correct
                 print("✅ Correct!")
+                # Update correct_answers regardless of try count
                 correct_answers += 1
                 num_correct += 1
+                # If correct, update question history with correct answer
+                question_history.append((i + 1, num1, operator, num2, correct_answer, True))
                 break
             else:
                 num_tries -= 1
@@ -167,15 +170,13 @@ def math_quiz(num_questions, ops, num_range):
                 if num_tries == 0:
                     # displays correct answer is user answer is incorrect
                     print(f"❌ Incorrect! The correct answer is {correct_answer}")
+                    # Update question history with incorrect answer
+                    question_history.append((i + 1, num1, operator, num2, user_answer, False))
                 else:
                     print(f"❌ Incorrect! You have {num_tries} tries left.")
                 if num_tries > 0:
                     continue
                 break
-
-        # records the question history
-        question_history.append(
-            (i + 1, num1, operator, num2, user_answer, check_answer(operator, user_answer, correct_answer)))
 
     total_questions = "infinite" if num_questions == "infinite" else num_questions_placeholder
     score = correct_answers * points_per_question
@@ -345,13 +346,21 @@ if show_statistics:
     # Print statistics section for the chosen difficulty
     difficulty = difficulty_name(num_range[1])
     points = difficulty_points[difficulty]
-    questions_answered = difficulty_questions_answered[difficulty]
-    total_attempted = num_correct + num_incorrect  # Calculate total attempted questions
-    percentage_correct = (num_correct / total_attempted) * 100 if total_attempted != 0 else 0
+    total_questions_answered = 0
+    total_correct = 0
+    total_incorrect = 0
+    for _, _, _, _, user_answer, is_correct in question_history:
+        total_questions_answered += 1
+        if is_correct:
+            total_correct += 1
+        else:
+            total_incorrect += 1
+
+    percentage_correct = (total_correct / total_questions_answered) * 100 if total_questions_answered != 0 else 0
 
     print("\nStatistics:")
-    print(f"Total correct answers: {num_correct}")
-    print(f"Total incorrect answers: {num_incorrect}")
+    print(f"Total correct answers: {total_correct}")
+    print(f"Total incorrect answers: {total_incorrect}")
     print(f"Total points scored for {difficulty} mode: {points}")
     print(f"Percentage of questions correct: {int(percentage_correct)}%")
 
