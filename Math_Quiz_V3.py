@@ -43,19 +43,19 @@ def choose_difficulty():
     print("3. 🟨 Hard (1-100)")
     print("4. 🟥 Extra Hard (1-1000)")
 
-    choice = input("Enter the number corresponding to your choice: ")
+    while True:
+        choice = input("Enter the number corresponding to your choice: ")
 
-    if choice == '1':
-        return 10
-    elif choice == '2':
-        return 20
-    elif choice == '3':
-        return 100
-    elif choice == '4':
-        return 1000
-    else:
-        print("Invalid choice. Please enter a number from 1 to 4.")
-        return choose_difficulty()
+        if choice == '1':
+            return 10
+        elif choice == '2':
+            return 20
+        elif choice == '3':
+            return 100
+        elif choice == '4':
+            return 1000
+        else:
+            print("Invalid choice. Please enter a number from 1 to 4.")
 
 
 # Generates a random math question based on chosen operation and number range
