@@ -4,10 +4,10 @@ import random
 question_history = []
 
 # Stores total points scored for each difficulty level
-difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
+difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Diabolic': 0}
 
 # Stores total number of questions answered for each difficulty level
-difficulty_questions_answered = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
+difficulty_questions_answered = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Diabolic': 0}
 
 
 # Updates total points for each difficulty level if correct
@@ -31,31 +31,31 @@ def difficulty_name(difficulty_range):
     elif difficulty_range == 100:
         return 'Hard'
     elif difficulty_range == 1000:
-        return 'Extra Hard'
+        return 'Diabolic'
 
 
 # Function to choose difficulty level
 def choose_difficulty():
     # Prompts users to choose difficulty
     print("Choose a difficulty level:")
-    print("1. 🟩 Easy (1-10)")
-    print("2. ⬜ Normal (1-20)")
-    print("3. 🟨 Hard (1-100)")
-    print("4. 🟥 Extra Hard (1-1000)")
+    print("🟩 Easy (1-10)")
+    print("🟨 Normal (1-20")
+    print("🟥 Hard (1-100)")
+    print("💀 Diabolic (1-1000)")
 
     while True:
-        choice = input("Enter the number corresponding to your choice: ")
+        choice = input("Enter the difficulty level: ").strip().lower()
 
-        if choice == '1':
-            return 10
-        elif choice == '2':
-            return 20
-        elif choice == '3':
-            return 100
-        elif choice == '4':
-            return 1000
+        if choice in ['e', 'easy']:
+            return 10, 'Easy'
+        elif choice in ['n', 'normal']:
+            return 20, 'Normal'
+        elif choice in ['h', 'hard']:
+            return 100, 'Hard'
+        elif choice in ['d', 'diabolic']:
+            return 1000, 'Diabolic'
         else:
-            print("Invalid choice. Please enter a number from 1 to 4.")
+            print("Invalid choice. Please enter a valid item from the list.")
 
 
 # Generates a random math question based on chosen operation and number range
@@ -99,7 +99,7 @@ def determine_num_tries(difficulty_level):
         return 2
     elif difficulty_level == 'Hard':
         return 3
-    elif difficulty_level == 'Extra Hard':
+    elif difficulty_level == 'Diabolic':
         return 4
 
 
@@ -163,6 +163,8 @@ def math_quiz(num_questions, ops, num_range):
                 num_correct += 1
                 # If correct, update question history with correct answer
                 question_history.append((i + 1, num1, operator, num2, correct_answer, True))
+                if num_tries == 1:
+                    print("Phew! You got it on the last try.")
                 break
             else:
                 num_tries -= 1
@@ -172,11 +174,10 @@ def math_quiz(num_questions, ops, num_range):
                     print(f"❌ Incorrect! The correct answer is {correct_answer}")
                     # Update question history with incorrect answer
                     question_history.append((i + 1, num1, operator, num2, user_answer, False))
-                else:
+                elif num_tries > 0:
                     print(f"❌ Incorrect! You have {num_tries} tries left.")
-                if num_tries > 0:
-                    continue
-                break
+                if num_tries == 0:
+                    break
 
     total_questions = "infinite" if num_questions == "infinite" else num_questions_placeholder
     score = correct_answers * points_per_question
@@ -188,6 +189,7 @@ def math_quiz(num_questions, ops, num_range):
     if num_questions != "infinite":
         print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
     return True, num_correct, num_incorrect
+
 
 
 # Integer checker function
@@ -246,35 +248,28 @@ multiplication (*), or division (/). You can also choose the random option to an
 of all operations.
 
 3. Choose the Difficulty Level:
-You'll be asked to select a difficulty level for your questions:
+You'll be asked to select a difficulty level for your questions by inputting the first 
+letter of your chosen difficulty:
 - 🟩 Easy: Numbers from 1 to 10, suitable for beginners.
-- ⬜ Normal: Numbers from 1 to 20, ideal for students with some math experience.
-- 🟨 Hard: Numbers from 1 to 100, challenging for confident students.
-- 🟥 Extra Hard: Numbers from 1 to 1000, for advanced students seeking a significant challenge.    
+- 🟨 Normal: Numbers from 1 to 20, a moderate challenge.
+- 🟥 Hard: Numbers from 1 to 100, for advanced practice.
+- 💀 Diabolic: Numbers from 1 to 1000, for math experts!
 
-4. Solve the Problems:
-Once you've chosen your preferences, you'll be presented with math problems based on your choices. 
-Answer the questions by just inputting the correct number and pressing enter.
-You will receive instant feedback on each answer. If you answer incorrectly you will be presented
-with the correct answer. You will also be given extra attempts at questions based on your chosen difficulty.
-If answered correctly, you will receive points based on your chosen difficulty.
+4. Answer the Questions:
+For each question, you'll be given multiple attempts depending on the difficulty level.
+- Easy: 1 attempt
+- Normal: 2 attempts
+- Hard: 3 attempts
+- Extra Hard: 4 attempts
 
-5. Quit Anytime:
-Exit the quiz at any time by entering "quit" as your answer to a question.
+5. Review Your Performance:
+After the quiz, you'll see a summary of your performance, including the number of correct 
+and incorrect answers, and the points you've earned based on the chosen difficulty.
 
-6. Quiz history and Scoring system:
-View all the questions you you answered by entering yes or y for short when asked to see your quiz history.
-You will be shown whether you got the questions correct or incorrect with the correct answers.    
-Also see how many points you scored in total with the statistics option.
-The point system is based on difficulty. This is how it works:
-🟩 Easy mode - 1 point
-⬜ Normal mode - 2 points
-🟨 Hard mode - 3 points
-🟥 Extra Hard mode - 4 points
+Type "quit" at any time to exit the quiz. 
 
-Have fun and good luck with the Math Quiz! 🎉
-
-    ''')
+Good luck and have fun! 🎉
+''')
 
 
 # Main routine starts here
@@ -312,7 +307,8 @@ while True:
         break
     else:
         print("Invalid operation! Please choose either +, -, *, /, or random.")
-num_range = (1, choose_difficulty())  # Asks for difficulty
+difficulty_value, difficulty_str = choose_difficulty()  # Asks for difficulty
+num_range = (1, difficulty_value)
 
 # Starts quiz
 result, num_correct, num_incorrect = math_quiz(num_questions, operations, num_range)
@@ -344,8 +340,7 @@ print()
 show_statistics = yes_no("📊 Do you want to see the statistics? 📊 ")
 if show_statistics:
     # Print statistics section for the chosen difficulty
-    difficulty = difficulty_name(num_range[1])
-    points = difficulty_points[difficulty]
+    points = difficulty_points[difficulty_str]
     total_questions_answered = 0
     total_correct = 0
     total_incorrect = 0
@@ -361,7 +356,7 @@ if show_statistics:
     print("\nStatistics:")
     print(f"Total correct answers: {total_correct}")
     print(f"Total incorrect answers: {total_incorrect}")
-    print(f"Total points scored for {difficulty} mode: {points}")
+    print(f"Total points scored for {difficulty_str} mode: {points}")
     print(f"Percentage of questions correct: {int(percentage_correct)}%")
 
 print()
