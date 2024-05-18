@@ -1,37 +1,29 @@
-import random
-
-# Stores total points scored for each difficulty level
-difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
-
-# Stores total number of questions answered for each difficulty level
-difficulty_questions_answered = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Extra Hard': 0}
-
-
 # Function to choose difficulty level
 def choose_difficulty():
     # Prompts users to choose difficulty
     print("Choose a difficulty level:")
-    print("1. 🟩 Easy (1-10)")
-    print("2. ⬜ Normal (1-20)")
-    print("3. 🟨 Hard (1-100)")
-    print("4. 🟥 Extra Hard (1-1000)")
+    print("🟩 Easy (1-10)")
+    print("🟨 Normal (1-20)")
+    print("🟥 Hard (1-100)")
+    print("💀 Diabolic (1-1000)")
 
     while True:
-        choice = input("Enter the number corresponding to your choice: ")
+        choice = input("Choose a difficulty level: ").strip().lower()
 
-        if choice == '1':
-            return 10
-        elif choice == '2':
-            return 20
-        elif choice == '3':
-            return 100
-        elif choice == '4':
-            return 1000
+        if choice in ['e', 'easy']:
+            return 10, 'Easy'
+        elif choice in ['n', 'normal']:
+            return 20, 'Normal'
+        elif choice in ['h', 'hard']:
+            return 100, 'Hard'
+        elif choice in ['d', 'diabolic']:
+            return 1000, 'Diabolic'
         else:
-            print("Invalid choice. Please enter a number from 1 to 4.")
+            print("Invalid choice. Please enter a valid item from the list.")
 
 
-# Test the function
-if __name__ == "__main__":
-    difficulty_range = choose_difficulty()
-    print(f"You have chosen the difficulty range: 1-{difficulty_range}")
+# Call the function to choose difficulty
+difficulty_range, difficulty_name = choose_difficulty()
+
+# Now you can use the difficulty_range and difficulty_name variables in your code
+print(f"Difficulty chosen: {difficulty_name} (1-{difficulty_range})")
