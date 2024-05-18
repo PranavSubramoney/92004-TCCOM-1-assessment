@@ -163,8 +163,8 @@ def math_quiz(num_questions, ops, num_range):
                 num_correct += 1
                 # If correct, update question history with correct answer
                 question_history.append((i + 1, num1, operator, num2, correct_answer, True))
-                if num_tries == 1:
-                    print("Phew! You got it on the last try.")
+                if difficulty_name_str != 'Easy' and num_tries == 1:
+                    print("Phew! You got it on the last guess.")
                 break
             else:
                 num_tries -= 1
