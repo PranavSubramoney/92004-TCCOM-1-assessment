@@ -136,10 +136,14 @@ def math_quiz(num_questions, ops, num_range):
 
             if user_input.lower() == "quit":
                 # Allows user to quit the quiz
-                print("You have quit the quiz.")
-                total_points = correct_answers * points_per_question
-                update_difficulty_points(difficulty_name_str, total_points)
-                return False, num_correct, num_incorrect
+                if i == 0:
+                    print("You have quit the quiz.")
+                    raise SystemExit
+                else:
+                    print("You have quit the quiz.")
+                    total_points = correct_answers * points_per_question
+                    update_difficulty_points(difficulty_name_str, total_points)
+                    return True, num_correct, num_incorrect
 
             # Handles invalid integer inputs
             try:
@@ -194,6 +198,7 @@ def math_quiz(num_questions, ops, num_range):
     if num_questions != "infinite":
         print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
     return True, num_correct, num_incorrect
+
 
 
 
