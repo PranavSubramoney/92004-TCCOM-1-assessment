@@ -200,8 +200,6 @@ def math_quiz(num_questions, ops, num_range):
     return True, num_correct, num_incorrect
 
 
-
-
 # Integer checker function
 def int_check(question):
     while True:
