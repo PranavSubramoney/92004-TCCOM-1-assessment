@@ -124,13 +124,7 @@ def math_quiz(num_questions, ops, num_range):
 
     # Iterates through each question
     for i in range(num_questions_placeholder):
-        # Generate question
-        question = generate_question(ops, num_range)
-        if question is None:
-            print("You've barely started and you're already retiring? Retirement goals, I like it!")
-            return None, num_correct, num_incorrect  # Exit if user quits
-        num1, operator, num2, correct_answer = question
-
+        num1, operator, num2, correct_answer = generate_question(ops, num_range)
         print(f"\nQuestion {i + 1}: What is {num1} {operator} {num2}?")
 
         num_tries = points_per_question
@@ -142,8 +136,10 @@ def math_quiz(num_questions, ops, num_range):
 
             if user_input.lower() == "quit":
                 # Allows user to quit the quiz
-                print("You've barely started and you're already retiring? Retirement goals, I like it!")
-                return None, num_correct, num_incorrect
+                print("You have quit the quiz.")
+                total_points = correct_answers * points_per_question
+                update_difficulty_points(difficulty_name_str, total_points)
+                return False, num_correct, num_incorrect
 
             # Handles invalid integer inputs
             try:
@@ -198,6 +194,7 @@ def math_quiz(num_questions, ops, num_range):
     if num_questions != "infinite":
         print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
     return True, num_correct, num_incorrect
+
 
 
 # Integer checker function
