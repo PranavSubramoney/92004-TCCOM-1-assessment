@@ -276,6 +276,12 @@ For each question, you'll be given multiple attempts depending on the difficulty
 After the quiz, you'll see a summary of your performance, including the number of correct 
 and incorrect answers, and the points you've earned based on the chosen difficulty.
 
+Point System:
+🟩 Easy: 1 point
+🟨 Normal: 2 points
+🟥 Hard: 3 points
+💀 Diabolic: 4 points
+
 Type "quit" at any time to exit the quiz. 
 
 Good luck and have fun! 🎉
