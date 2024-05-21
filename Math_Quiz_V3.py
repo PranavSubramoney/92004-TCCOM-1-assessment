@@ -124,7 +124,13 @@ def math_quiz(num_questions, ops, num_range):
 
     # Iterates through each question
     for i in range(num_questions_placeholder):
-        num1, operator, num2, correct_answer = generate_question(ops, num_range)
+        # Generate question
+        question = generate_question(ops, num_range)
+        if question is None:
+            print("You've barely started and you're already retiring? Retirement goals, I like it!")
+            return None, num_correct, num_incorrect  # Exit if user quits
+        num1, operator, num2, correct_answer = question
+
         print(f"\nQuestion {i + 1}: What is {num1} {operator} {num2}?")
 
         num_tries = points_per_question
@@ -136,10 +142,8 @@ def math_quiz(num_questions, ops, num_range):
 
             if user_input.lower() == "quit":
                 # Allows user to quit the quiz
-                print("You have quit the quiz.")
-                total_points = correct_answers * points_per_question
-                update_difficulty_points(difficulty_name_str, total_points)
-                return False, num_correct, num_incorrect
+                print("You've barely started and you're already retiring? Retirement goals, I like it!")
+                return None, num_correct, num_incorrect
 
             # Handles invalid integer inputs
             try:
@@ -157,14 +161,19 @@ def math_quiz(num_questions, ops, num_range):
 
             if check_answer(operator, user_answer, correct_answer):
                 # updates / notifies user if their answer is correct
-                print("✅ Correct!")
+                if num_tries == 1 and difficulty_name_str != 'Easy':
+                    print("✅ Correct!")
+                    print("Phew! You got it on the last try.")
+                else:
+                    print("✅ Correct!")
                 # Update correct_answers regardless of try count
                 correct_answers += 1
                 num_correct += 1
                 # If correct, update question history with correct answer
                 question_history.append((i + 1, num1, operator, num2, correct_answer, True))
-                if difficulty_name_str != 'Easy' and num_tries == 1:
-                    print("Phew! You got it on the last guess.")
+                if difficulty_name_str != 'Easy' and num_tries != 1:
+                    tries_str = "try" if num_tries == points_per_question else "tries"
+                    print(f"You got the answer in {points_per_question - num_tries + 1} {tries_str}.")
                 break
             else:
                 num_tries -= 1
@@ -189,7 +198,6 @@ def math_quiz(num_questions, ops, num_range):
     if num_questions != "infinite":
         print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
     return True, num_correct, num_incorrect
-
 
 
 # Integer checker function
