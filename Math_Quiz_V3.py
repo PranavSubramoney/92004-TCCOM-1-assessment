@@ -137,7 +137,7 @@ def math_quiz(num_questions, ops, num_range):
             if user_input.lower() == "quit":
                 # Allows user to quit the quiz
                 if i == 0:
-                    print("You have quit the quiz.")
+                    print("You've barely started and you're already retiring? Retirement goals, I like it!")
                     raise SystemExit
                 else:
                     print("You have quit the quiz.")
