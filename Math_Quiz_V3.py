@@ -1,14 +1,5 @@
 import random
 
-# Stores question history
-question_history = []
-
-# Stores total points scored for each difficulty level
-difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Diabolic': 0}
-
-# Stores total number of questions answered for each difficulty level
-difficulty_questions_answered = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Diabolic': 0}
-
 
 # Updates total points for each difficulty level if correct
 def update_difficulty_points(difficulty_level, points):
@@ -58,27 +49,40 @@ def choose_difficulty():
             print("Invalid choice. Please enter a valid item from the list.")
 
 
-# Generates a random math question based on chosen operation and number range
 def generate_question(ops, num_range):
+    # Randomly select an operation from the provided list of operations
     operation = random.choice(ops)
-    # Generates numbers based on operation
+
+    # Generate numbers and the correct answer based on the selected operation
     if operation == '+':
+        # For addition, generate two random numbers within the specified range
         num1 = random.randint(num_range[0], num_range[1])
         num2 = random.randint(num_range[0], num_range[1])
-        correct_answer = num1 + num2
+        correct_answer = num1 + num2  # Calculate the correct answer for addition
+
     elif operation == '-':
+        # For subtraction, generate the first number within the range
         num1 = random.randint(num_range[0], num_range[1])
+        # Generate the second number within the range up to the value of the first number to avoid negative results
         num2 = random.randint(num_range[0], num1)
-        correct_answer = num1 - num2
+        correct_answer = num1 - num2  # Calculate the correct answer for subtraction
+
     elif operation == '*':
+        # For multiplication, generate two random numbers within the specified range
         num1 = random.randint(num_range[0], num_range[1])
         num2 = random.randint(num_range[0], num_range[1])
-        correct_answer = num1 * num2
-    else:  # For division
-        num2 = random.randint(1, 10)  # Ensure num2 is not 1, and limit to 10 for num2
+        correct_answer = num1 * num2  # Calculate the correct answer for multiplication
+
+    else:  # This handles the division case
+        # For division, ensure the divisor (num2) is not 0 and limit its range to 1-10
+        num2 = random.randint(1, 10)
+        # Calculate the maximum possible quotient within the specified range to ensure num1 is a multiple of num2
         max_quotient = num_range[1] // num2
-        num1 = random.randint(num_range[0], max_quotient) * num2  # num1 is a multiple of num2
-        correct_answer = num1 // num2  # Calculate correct answer using integer division
+        # Generate num1 as a random multiple of num2 within the specified range
+        num1 = random.randint(num_range[0], max_quotient) * num2
+        correct_answer = num1 // num2  # Calculate the correct answer using integer division
+
+    # Return the generated question components: num1, operation, num2, and the correct answer
     return num1, operation, num2, correct_answer
 
 
@@ -103,7 +107,6 @@ def determine_num_tries(difficulty_level):
         return 4
 
 
-# Main routine
 def math_quiz(num_questions, ops, num_range):
     # Starts quiz based on user parameter choices
     print(f"You've chosen {ops} operation(s) with numbers in the range {num_range}.\n")
@@ -295,6 +298,15 @@ print('''
   ''')
 print()
 
+# Stores question history
+question_history = []
+
+# Stores total points scored for each difficulty level
+difficulty_points = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Diabolic': 0}
+
+# Stores total number of questions answered for each difficulty level
+difficulty_questions_answered = {'Easy': 0, 'Normal': 0, 'Hard': 0, 'Diabolic': 0}
+
 # Display instructions if user wants to see them
 want_instructions = yes_no("Do you want to read the instructions? ")
 
@@ -302,6 +314,7 @@ if want_instructions:
     instructions()
 
 operations = ['+', '-', '*', '/']
+
 
 # Ask for the number of questions
 print()
@@ -312,8 +325,21 @@ else:
     print(f"You chose {num_questions} questions.")
 # Asks for operation
 while True:
-    operation_choice = input("Which operation do you want? (➕,➖,✖️,➗, random): ").lower()
-    if operation_choice in ['+', '-', '*', '/', 'random']:
+    operation_choice = input("Which operation do you want? (➕, ➖, ✖️, ➗, random): ").strip().lower()
+
+    # Map emojis to corresponding operations
+    emoji_to_operation = {
+        '➕': '+',
+        '➖': '-',
+        '✖️': '*',
+        '➗': '/'
+    }
+
+    # Check if user input is an emoji
+    if operation_choice in emoji_to_operation.keys():
+        operations = [emoji_to_operation[operation_choice]]
+        break
+    elif operation_choice in ['+', '-', '*', '/', 'random']:
         if operation_choice == 'random':
             operations = ['+', '-', '*', '/']  # Includes all operations
         else:
@@ -321,6 +347,7 @@ while True:
         break
     else:
         print("Invalid operation! Please choose either +, -, *, /, or random.")
+
 difficulty_value, difficulty_str = choose_difficulty()  # Asks for difficulty
 num_range = (1, difficulty_value)
 
