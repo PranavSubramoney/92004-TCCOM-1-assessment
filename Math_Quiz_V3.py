@@ -3,137 +3,111 @@ import random
 
 # Updates total points for each difficulty level if correct
 def update_difficulty_points(difficulty_level, points):
-    # Increases points for difficulty level
+    # increases the points for the chosen difficulty by the given points
     difficulty_points[difficulty_level] += points
 
 
 # Updates questions answered
-def update_difficulty_questions(difficulty_level):
-    # Increases total questions answered
-    difficulty_questions_answered[difficulty_level] += 1
+def update_difficulty_questions(difficulty_level, num_questions):
+    # increases the number of questions answered for the specified difficulty
+    difficulty_questions_answered[difficulty_level] += num_questions
 
 
 # Determines the difficulty based on number range
 def difficulty_name(difficulty_range):
-    if difficulty_range == 10:
-        return 'Easy'
-    elif difficulty_range == 20:
-        return 'Normal'
-    elif difficulty_range == 100:
-        return 'Hard'
-    elif difficulty_range == 1000:
-        return 'Diabolic'
+    # maps difficulty to their number range
+    difficulty_mapping = {10: 'Easy', 20: 'Normal', 100: 'Hard', 1000: 'Diabolic'}
+    return difficulty_mapping.get(difficulty_range, 'Unknown')
 
 
 # Function to choose difficulty level
 def choose_difficulty():
-    # Prompts users to choose difficulty
+    # prints the difficulty options
     print("Choose a difficulty level:")
     print("🟩 Easy (1-10)")
-    print("🟨 Normal (1-20")
+    print("🟨 Normal (1-20)")
     print("🟥 Hard (1-100)")
     print("💀 Diabolic (1-1000)")
 
+    # maps user inputs to difficulty to levels to their corresponding number range
+    difficulty_mapping = {
+        'e': (10, 'Easy'),
+        'easy': (10, 'Easy'),
+        'n': (20, 'Normal'),
+        'normal': (20, 'Normal'),
+        'h': (100, 'Hard'),
+        'hard': (100, 'Hard'),
+        'd': (1000, 'Diabolic'),
+        'diabolic': (1000, 'Diabolic')
+    }
+
+    # loop until user provides a valid input
     while True:
         choice = input("Enter the difficulty level: ").strip().lower()
-
-        if choice in ['e', 'easy']:
-            return 10, 'Easy'
-        elif choice in ['n', 'normal']:
-            return 20, 'Normal'
-        elif choice in ['h', 'hard']:
-            return 100, 'Hard'
-        elif choice in ['d', 'diabolic']:
-            return 1000, 'Diabolic'
-        else:
-            print("Invalid choice. Please enter a valid item from the list.")
+        if choice in difficulty_mapping:
+            return difficulty_mapping[choice]
+        print("Invalid choice. Please enter a valid item from the list.")
 
 
+# Generates a math question based on the specific number range chosen
 def generate_question(ops, num_range):
-    # Randomly select an operation from the provided list of operations
+    # Selects a random operation from the given list
     operation = random.choice(ops)
+    # Generates two numbers within the specified range
+    num1 = random.randint(num_range[0], num_range[1])
+    num2 = random.randint(num_range[0], num_range[1])
 
-    # Generate numbers and the correct answer based on the selected operation
-    if operation == '+':
-        # For addition, generate two random numbers within the specified range
-        num1 = random.randint(num_range[0], num_range[1])
-        num2 = random.randint(num_range[0], num_range[1])
-        correct_answer = num1 + num2  # Calculate the correct answer for addition
-
-    elif operation == '-':
-        # For subtraction, generate the first number within the range
-        num1 = random.randint(num_range[0], num_range[1])
-        # Generate the second number within the range up to the value of the first number to avoid negative results
+    if operation == '+':  # addition
+        correct_answer = num1 + num2
+    elif operation == '-':  # subtraction
         num2 = random.randint(num_range[0], num1)
-        correct_answer = num1 - num2  # Calculate the correct answer for subtraction
+        correct_answer = num1 - num2
+    elif operation == '*':  # multiplication
+        correct_answer = num1 * num2
+    else:  # Division case
+        num2 = random.randint(1, 10)  # Avoids division by zero
+        num1 = random.randint(num_range[0], num_range[1] // num2) * num2  # ensure the dividend is in specified range
+        correct_answer = num1 // num2
 
-    elif operation == '*':
-        # For multiplication, generate two random numbers within the specified range
-        num1 = random.randint(num_range[0], num_range[1])
-        num2 = random.randint(num_range[0], num_range[1])
-        correct_answer = num1 * num2  # Calculate the correct answer for multiplication
-
-    else:  # This handles the division case
-        # For division, ensure the divisor (num2) is not 0 and limit its range to 1-10
-        num2 = random.randint(1, 10)
-        # Calculate the maximum possible quotient within the specified range to ensure num1 is a multiple of num2
-        max_quotient = num_range[1] // num2
-        # Generate num1 as a random multiple of num2 within the specified range
-        num1 = random.randint(num_range[0], max_quotient) * num2
-        correct_answer = num1 // num2  # Calculate the correct answer using integer division
-
-    # Return the generated question components: num1, operation, num2, and the correct answer
     return num1, operation, num2, correct_answer
 
 
 # Checks if user's answer is correct
-def check_answer(op, user_answer, correct_answer):
-    if op in ['+', '-', '*', '/']:
-        return user_answer == correct_answer
-    else:
-        return False
+def check_answer(user_answer, correct_answer):
+    return user_answer == correct_answer
 
 
-# Determines number tries based on chosen difficulty
+# Determines number of tries based on chosen difficulty
 def determine_num_tries(difficulty_level):
-    # Assigns number of tries
-    if difficulty_level == 'Easy':
-        return 1
-    elif difficulty_level == 'Normal':
-        return 2
-    elif difficulty_level == 'Hard':
-        return 3
-    elif difficulty_level == 'Diabolic':
-        return 4
+    # maps the number of tries to the difficulties
+    tries_mapping = {'Easy': 1, 'Normal': 2, 'Hard': 3, 'Diabolic': 4}
+    return tries_mapping.get(difficulty_level, 1)
 
 
+# Main function used to generate math operation based questions
 def math_quiz(num_questions, ops, num_range):
-    # Starts quiz based on user parameter choices
     print(f"You've chosen {ops} operation(s) with numbers in the range {num_range}.\n")
+
+    # initialise the counters for number of correct and incorrect answers
     correct_answers = 0
     num_correct = 0
     num_incorrect = 0
+
     question_history.clear()
     difficulty_name_str = difficulty_name(num_range[1])
     points_per_question = determine_num_tries(difficulty_name_str)
+    num_questions_placeholder = 10 ** 9 if num_questions == "infinite" else int(num_questions)
 
-    # placeholder number for infinite questions
-    if num_questions == "infinite":
-        num_questions_placeholder = 10 ** 9
-    else:
-        num_questions_placeholder = int(num_questions)
-
-    difficulty_questions_answered[difficulty_name_str] += num_questions_placeholder
-
-    # Iterates through each question
+    update_difficulty_questions(difficulty_name_str, num_questions_placeholder)
+    # Loop through each question up to chosen number or infinite mode
     for i in range(num_questions_placeholder):
         num1, operator, num2, correct_answer = generate_question(ops, num_range)
         print(f"\nQuestion {i + 1}: What is {num1} {operator} {num2}?")
 
+        # keeps track of number of attempted answers
         num_tries = points_per_question
         attempted_numbers = set()
-        user_answer = None  # Initialize user_answer
-        # Loops for multiple tries if user does not input an integer
+
         while num_tries > 0:
             user_input = input("Your answer: ")
 
@@ -143,63 +117,50 @@ def math_quiz(num_questions, ops, num_range):
                     print("You've barely started and you're already retiring? Retirement goals, I like it!")
                     raise SystemExit
                 else:
+                    # if quitting later, provide statistics and history
                     print("You have quit the quiz.")
                     total_points = correct_answers * points_per_question
                     update_difficulty_points(difficulty_name_str, total_points)
                     return True, num_correct, num_incorrect
 
-            # Handles invalid integer inputs
             try:
                 user_answer = int(user_input)
             except ValueError:
                 print("Invalid input! Please enter a valid integer.")
                 continue
-
+            # ensures there are no duplicate inputs
             if user_answer in attempted_numbers:
-                # Handles duplicate integer inputs
                 print("You have already tried this number. Please enter a different one.")
                 continue
 
             attempted_numbers.add(user_answer)
 
-            if check_answer(operator, user_answer, correct_answer):
-                # updates / notifies user if their answer is correct
-                if num_tries == 1 and difficulty_name_str != 'Easy':
-                    print("✅ Correct!")
-                    print("Phew! You got it on the last try.")
-                else:
-                    print("✅ Correct!")
-                # Update correct_answers regardless of try count
+            if check_answer(user_answer, correct_answer):
+                print("✅ Correct!")
                 correct_answers += 1
                 num_correct += 1
-                # If correct, update question history with correct answer
                 question_history.append((i + 1, num1, operator, num2, correct_answer, True))
-                if difficulty_name_str != 'Easy' and num_tries != 1:
-                    tries_str = "try" if num_tries == points_per_question else "tries"
-                    print(f"You got the answer in {points_per_question - num_tries + 1} {tries_str}.")
+                if num_tries != points_per_question:
+                    print(f"You got the answer in {points_per_question - num_tries + 1} tries.")
                 break
             else:
                 num_tries -= 1
                 num_incorrect += 1
                 if num_tries == 0:
-                    # displays correct answer is user answer is incorrect
                     print(f"❌ Incorrect! The correct answer is {correct_answer}")
-                    # Update question history with incorrect answer
                     question_history.append((i + 1, num1, operator, num2, user_answer, False))
-                elif num_tries > 0:
+                else:
                     print(f"❌ Incorrect! You have {num_tries} tries left.")
-                if num_tries == 0:
-                    break
 
-    total_questions = "infinite" if num_questions == "infinite" else num_questions_placeholder
-    score = correct_answers * points_per_question
-    update_difficulty_points(difficulty_name_str, score)
-    (correct_answers / num_questions_placeholder) * 100 if num_questions != "infinite" else 0
+    total_points = correct_answers * points_per_question
+    update_difficulty_points(difficulty_name_str, total_points)
+    total_questions = num_questions_placeholder if num_questions != "infinite" else "infinite"
+
     print()
-    # displays points and questions correct at end of quiz (not infinite mode)
-    print(f"You scored {score} out of {total_questions * points_per_question} points.")
+    print(f"You scored {total_points} out of {total_questions * points_per_question} points.")
     if num_questions != "infinite":
         print(f"You answered {correct_answers} questions correctly out of {num_questions_placeholder}.\n")
+    # returns the result and statistics
     return True, num_correct, num_incorrect
 
 
@@ -207,39 +168,27 @@ def math_quiz(num_questions, ops, num_range):
 def int_check(question):
     while True:
         error = "Please enter an integer that is 1 or more, or push enter for infinite questions."
-
         to_check = input(question)
-
-        # check for infinite mode
         if to_check.strip() == "":
             return "infinite"
-
         try:
             response = int(to_check)
-
-            # checks that the number is more than / equal to 1
-            if response < 1:
-                print(error)
-            else:
+            if response >= 1:
                 return response
-
+            print(error)
         except ValueError:
             print(error)
 
 
-# checks user enter yes (y) or no (n)
+# Checks user enters yes (y) or no (n)
 def yes_no(question):
     while True:
         response = input(question).lower()
-
-        # checks user response, question
-        # repeats if user doesn't enter yes or no
-        if response == "yes" or response == "y":
+        if response in ['yes', 'y']:
             return True
-        if response == "no" or response == "n":
+        if response in ['no', 'n']:
             return False
-        else:
-            print("Please enter either yes or no")
+        print("Please enter either yes or no")
 
 
 # Displays instructions to user
@@ -271,7 +220,7 @@ For each question, you'll be given multiple attempts depending on the difficulty
 - Easy: 1 attempt
 - Normal: 2 attempts
 - Hard: 3 attempts
-- Extra Hard: 4 attempts
+- Diabolic: 4 attempts
 
 5. Review Your Performance:
 After the quiz, you'll see a summary of your performance, including the number of correct 
@@ -313,40 +262,28 @@ want_instructions = yes_no("Do you want to read the instructions? ")
 if want_instructions:
     instructions()
 
-operations = ['+', '-', '*', '/']
-
-
 # Ask for the number of questions
 print()
 num_questions = int_check("How many questions would you like? Enter a number or push enter for an infinite amount: ")
-if num_questions == "":
-    print("You chose infinite questions.")
-else:
-    print(f"You chose {num_questions} questions.")
+print(f"You chose {num_questions if num_questions != 'infinite' else 'infinite'} questions.")
+
 # Asks for operation
 while True:
     operation_choice = input("Which operation do you want? (➕, ➖, ✖️, ➗, random): ").strip().lower()
+    # Maps emoji to operation symbols
+    emoji_to_operation = {'➕': '+', '➖': '-', '✖️': '*', '➗': '/'}
 
-    # Map emojis to corresponding operations
-    emoji_to_operation = {
-        '➕': '+',
-        '➖': '-',
-        '✖️': '*',
-        '➗': '/'
-    }
-
-    # Check if user input is an emoji
-    if operation_choice in emoji_to_operation.keys():
+    if operation_choice in emoji_to_operation:
         operations = [emoji_to_operation[operation_choice]]
         break
-    elif operation_choice in ['+', '-', '*', '/', 'random']:
-        if operation_choice == 'random':
-            operations = ['+', '-', '*', '/']  # Includes all operations
-        else:
-            operations = [operation_choice]
+    elif operation_choice in ['+', '-', '*', '/']:
+        operations = [operation_choice]  # Use the selected operation
+        break
+    elif operation_choice == 'random' or operation_choice == 'r':
+        operations = ['+', '-', '*', '/']  # Includes all operations
         break
     else:
-        print("Invalid operation! Please choose either +, -, *, /, or random.")
+        print("Invalid operation! Please choose either +, -, *, /, random.")
 
 difficulty_value, difficulty_str = choose_difficulty()  # Asks for difficulty
 num_range = (1, difficulty_value)
@@ -355,19 +292,17 @@ num_range = (1, difficulty_value)
 result, num_correct, num_incorrect = math_quiz(num_questions, operations, num_range)
 
 # Quiz history section
-# Displays quiz history if they choose to see it
 print()
 show_quiz_history = yes_no("⏱️ Do you want to see the quiz history? ⏱️ ")
 if show_quiz_history:
-    if len(question_history) == 0:
+    if not question_history:
         print("There is no quiz history to show.")
     else:
         print("\n⏪ Quiz History ⏪:")
         for question_num, num1, operator, num2, user_answer, is_correct in question_history:
-            # shows result of questions with correct answers
             result = "✅ Correct" if is_correct else f"❌ Incorrect"
-            correct_answer = num1 + num2 if operator == '+' else num1 - num2 if operator == '-' else num1 * num2 if (
-                    operator == '*') else num1 // num2
+            correct_answer = num1 + num2 if operator == '+' else num1 - num2 if operator == '-' else num1 * num2 \
+                if operator == '*' else num1 // num2
             print(f"\nQuestion {question_num}/{len(question_history)}: What is {num1} {operator} {num2}?")
             if not is_correct:
                 print(f"Your answer: {user_answer} (Correct answer: {correct_answer})")
@@ -376,23 +311,14 @@ if show_quiz_history:
             print(f"Result: {result}")
 
 # Statistics function
-# Displays statistics if user choose to see it
 print()
 show_statistics = yes_no("📊 Do you want to see the statistics? 📊 ")
 if show_statistics:
-    # Print statistics section for the chosen difficulty
     points = difficulty_points[difficulty_str]
-    total_questions_answered = 0
-    total_correct = 0
-    total_incorrect = 0
-    for _, _, _, _, user_answer, is_correct in question_history:
-        total_questions_answered += 1
-        if is_correct:
-            total_correct += 1
-        else:
-            total_incorrect += 1
-
-    percentage_correct = (total_correct / total_questions_answered) * 100 if total_questions_answered != 0 else 0
+    total_questions_answered = len(question_history)
+    total_correct = sum(1 for _, _, _, _, _, is_correct in question_history if is_correct)
+    total_incorrect = total_questions_answered - total_correct
+    percentage_correct = (total_correct / total_questions_answered) * 100 if total_questions_answered else 0
 
     print("\nStatistics:")
     print(f"Total correct answers: {total_correct}")
