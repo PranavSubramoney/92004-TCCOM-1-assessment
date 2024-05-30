@@ -134,7 +134,7 @@ def math_quiz(num_questions, ops, num_range):
                 continue
 
             attempted_numbers.add(user_answer)
-
+            # gives feedback if answer is correct or incorrect
             if check_answer(user_answer, correct_answer):
                 print("✅ Correct!")
                 correct_answers += 1
@@ -232,7 +232,7 @@ Point System:
 🟥 Hard: 3 points
 💀 Diabolic: 4 points
 
-Type "quit" at any time to exit the quiz. 
+Type "quit" at any time during a question to exit the quiz. 
 
 Good luck and have fun! 🎉
 ''')
